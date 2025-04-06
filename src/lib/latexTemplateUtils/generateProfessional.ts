@@ -1,12 +1,12 @@
 import { formatDate, formatYear } from "../utils";
-import { EducationValues } from "../validation";
+import { ResumeValues } from "../validation";
 
 export function generateProfessional(
   template: string,
-  resumeData: any,
+  resumeData: ResumeValues,
 ): string {
   const highestQualification = resumeData.educations?.find(
-    (edu: EducationValues) => edu.isHighestQualification,
+    (edu) => edu.isHighestQualification,
   );
   const placeholders: { [key: string]: string } = {
     "<<NAME>>":
@@ -15,7 +15,7 @@ export function generateProfessional(
     "<<EMAIL>>": resumeData.email || "example@gmail.com",
     "<<PHONE>>": resumeData.phone || "+1234567890",
     "<<PORTFOLIO>>": resumeData.portfolio || "https://example.com",
-    "<<LINKEDIN>>": resumeData.linkedin || "https://linkedin.com/in/johndoe",
+    "<<LINKEDIN>>": resumeData.linkedIn || "https://linkedin.com/in/johndoe",
     "<<GITHUB>>": resumeData.github || "https://github.com/johndoe",
     "<<DEGREE>>": highestQualification?.degree || "B.Tech",
     "<<SCHOOL>>": highestQualification?.school || "XYZ University",

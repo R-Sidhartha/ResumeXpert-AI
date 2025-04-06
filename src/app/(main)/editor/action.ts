@@ -109,8 +109,8 @@ export async function saveResume(values: ResumeValues) {
     POR,
     skills,
     achievements,
-    ExtraCurriculars,
-    Certifications,
+    extraCurriculars,
+    certifications,
     // customization,
     ...resumeValues
   } = resumeSchema.parse(values);
@@ -199,8 +199,8 @@ export async function saveResume(values: ResumeValues) {
           },
         },
         achievements: achievements ?? [],
-        certifications: Certifications ?? [],
-        extraCurriculars: ExtraCurriculars ?? [],
+        certifications: certifications ?? [],
+        extraCurriculars: extraCurriculars ?? [],
         workExperiences: {
           deleteMany: {},
           create: workExperiences?.map((exp) => ({
@@ -255,8 +255,8 @@ export async function saveResume(values: ResumeValues) {
           },
         },
         achievements: achievements ?? [],
-        certifications: Certifications ?? [],
-        extraCurriculars: ExtraCurriculars ?? [],
+        certifications: certifications ?? [],
+        extraCurriculars: extraCurriculars ?? [],
         workExperiences: {
           create: workExperiences?.map((exp) => ({
             ...exp,

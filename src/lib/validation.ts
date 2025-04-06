@@ -76,16 +76,22 @@ export type Projects = NonNullable<
 >[number];
 
 export const certificationSchema = z.object({
-  Certifications: z.array(z.string().trim()).optional(),
+  certifications: z.array(z.string().trim()).optional(),
 });
 
 export type CertificationValues = z.infer<typeof certificationSchema>;
 
-export const ExtraCurricularSchema = z.object({
-  ExtraCurriculars: z.array(z.string().trim()).optional(),
+export const extraCurricularSchema = z.object({
+  extraCurriculars: z.array(z.string().trim()).optional(),
 });
 
-export type ExtraCurricularValues = z.infer<typeof ExtraCurricularSchema>;
+export type ExtraCurricularValues = z.infer<typeof extraCurricularSchema>;
+
+export const achievementsSchema = z.object({
+  achievements: z.array(z.string().trim()).optional(),
+});
+
+export type AchievementsValues = z.infer<typeof achievementsSchema>;
 
 export const porSchema = z.object({
   POR: z
@@ -103,12 +109,6 @@ export const porSchema = z.object({
 
 export type PORValues = z.infer<typeof porSchema>;
 export type POR = NonNullable<z.infer<typeof porSchema>["POR"]>[number];
-
-export const achievementsSchema = z.object({
-  achievements: z.array(z.string().trim()).optional(),
-});
-
-export type AchievementsValues = z.infer<typeof achievementsSchema>;
 
 export const educationSchema = z.object({
   educations: z
@@ -166,12 +166,10 @@ export const resumeSchema = z.object({
   ...porSchema.shape,
   ...achievementsSchema.shape,
   ...certificationSchema.shape,
-  ...ExtraCurricularSchema.shape,
+  ...extraCurricularSchema.shape,
   ...educationSchema.shape,
   ...skillsSchema.shape,
   ...summarySchema.shape,
-  // ...customizationSchema.shape,
-  // ...resumeTemplateSchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
   resumeTemplateId: z.string(),
@@ -238,7 +236,7 @@ export const generateSummarySchema = z.object({
   ...skillsSchema.shape,
   ...projectsSchema.shape,
   ...certificationSchema.shape,
-  ...ExtraCurricularSchema.shape,
+  ...extraCurricularSchema.shape,
   ...achievementsSchema.shape,
   ...porSchema.shape,
 });

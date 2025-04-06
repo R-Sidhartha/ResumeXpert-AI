@@ -79,8 +79,8 @@ export function generateSleek(
             .join(" ") || `\\item Developed using modern web technologies.`) +
           ` \\end{itemize}`,
       ).join(" ") || "No Projects",
-    "<<ExtraCurricular>>": resumeData.ExtraCurriculars?.length
-      ? `\\begin{itemize} ${resumeData.ExtraCurriculars.map((activity) => `\\item ${escapeLatex(activity)}`).join(" ")} \\end{itemize}`
+    "<<ExtraCurricular>>": resumeData.extraCurriculars?.length
+      ? `\\begin{itemize} ${resumeData.extraCurriculars.map((activity) => `\\item ${escapeLatex(activity)}`).join(" ")} \\end{itemize}`
       : `\\begin{itemize} \\item No Extracurricular Activities \\end{itemize}`,
   };
 

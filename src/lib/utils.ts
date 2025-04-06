@@ -78,6 +78,12 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
     phone: data.phone || undefined,
     email: data.email || undefined,
     resumeTemplateId: data.resumeTemplateId || "",
+    achievements: data.achievements || [],
+    certifications: data.certifications || [],
+    extraCurriculars: data.extraCurriculars || [],
+    portfolio: data.portfolio || undefined,
+    github: data.github || undefined,
+    linkedIn: data.linkedIn || undefined,
     customization: data.customization
       ? {
           bulletIcon: data.customization.bulletIcon ?? undefined,

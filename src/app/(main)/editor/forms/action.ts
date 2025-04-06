@@ -26,7 +26,7 @@ export async function generateSummary(input: GenerateSummaryInput) {
     educations,
     skills,
     Projects,
-    Certifications,
+    certifications,
     achievements,
     POR,
   } = generateSummarySchema.parse(input);
@@ -64,8 +64,10 @@ export async function generateSummary(input: GenerateSummaryInput) {
     sections.push(`Projects:\n${formatted}`);
   }
 
-  if (Certifications?.length) {
-    const formatted = Certifications.map((cert) => `- ${cert}`).join("\n");
+  if (certifications?.length) {
+    const formatted = certifications
+      .map((cert: string) => `- ${cert}`)
+      .join("\n");
     sections.push(`Certifications:\n${formatted}`);
   }
 

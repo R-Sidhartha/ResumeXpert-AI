@@ -1,7 +1,5 @@
 "use client";
 
-import CustomizationPanel from "./CustomizationPanel";
-
 // import { useEffect, useRef, useState } from "react";
 // import CompileButton from "./CompileButton";
 // import { fetchResumeTemplate } from "@/app/(main)/editor/action";

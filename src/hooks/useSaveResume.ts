@@ -77,5 +77,5 @@ export default function useSaveResume({
     }
   };
 
-  return { isSaving, hasUnsavedChanges, handleSaveAndCompile };
+  return { isSaving, hasUnsavedChanges, isError, handleSaveAndCompile };
 }

@@ -71,7 +71,12 @@ export default async function Page({ searchParams }: PageProps) {
         // templateId={templateId}
         templateData={templateData}
         customizations={customization ?? null}
-        userData={userData}
+        userData={{
+            firstName: userData.firstName || "",
+            lastName: userData.lastName || "",
+            github: userData.github || "",
+            linkedIn: userData.linkedIn || "",
+        }}
     />;
 
     // return (

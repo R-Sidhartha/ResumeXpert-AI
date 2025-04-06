@@ -59,10 +59,10 @@ export default function ResumeEditor(
     const searchParams = useSearchParams();
 
     const [resumeData, setResumeData] = useState<ResumeValues>(
-        resumeToEdit ? mapToResumeValues(resumeToEdit) : { resumeTemplateId: templateData.id, customization: customizations, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn }
+        resumeToEdit ? mapToResumeValues(resumeToEdit) : {
+            resumeTemplateId: templateData.id, customization: customizations, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn
+        }
     );
-
-
     const [showSmResumePreview, setShowSmResumePreview] = useState(false);
     // const [TemplateCode, setTemplateCode] = useState<string>(templateCode);
     const [latexCode, setLatexCode] = useState<string>('');
