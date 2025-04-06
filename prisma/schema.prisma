@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  firstName String?
+  lastName  String?
+  linkedIn  String?
+  github    String?
+  email     String   @unique
+  onboarded Boolean  @default(false)
+  resumes   Resume[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user")
+}
+
+model Resume {
+  id     String @id @default(cuid())
+  userId String
+
+  user User @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+
+  title       String?
+  description String?
+
+  photoUrl    String?
+  colorHex    String  @default("#000000")
+  borderStyle String  @default("squircle")
+  summary     String?
+  firstName   String?
+  lastName    String?
+  jobTitle    String?
+  city        String?
+  country     String?
+  phone       String?
+  email       String?
+  linkedIn    String?
+  github      String?
+  twitter     String?
+  portfolio   String?
+
+  pdfUrl String?
+  imgUrl String?
+
+  resumeTemplate   ResumeTemplate? @relation(fields: [resumeTemplateId], references: [id], onDelete: Cascade)
+  resumeTemplateId String?
+
+  customization Customization?
+
+  workExperiences           WorkExperience[]
+  educations                Education[]
+  projects                  Project[]
+  positionsOfResponsibility PositionOfResponsibility[]
+  skills                    Skill[]
+  certifications            String[]                   @default([])
+  achievements              String[]                   @default([])
+  extraCurriculars          String[]                   @default([])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resumes")
+}
+
+model ResumeTemplate {
+  id                String  @id @default(cuid())
+  name              String
+  description       String?
+  thumbnailUrl      String
+  template          String
+  subscriptionLevel String
+
+  resumes   Resume[] //have to create function to update this when user selects on any resume template
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("resume_templates")
+}
+
+model Customization {
+  id       String @id @default(cuid())
+  resumeId String @unique
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  bulletIcon     String?
+  margin         String?
+  fontSize       String?
+  lineSpacing    String?
+  sectionSpacing String?
+  itemSpacing    String?
+  color          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("customization")
+}
+
+model WorkExperience {
+  id          String    @id @default(cuid())
+  position    String?
+  company     String?
+  startDate   DateTime?
+  endDate     DateTime?
+  description String[]  @default([])
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("work_experiences")
+}
+
+model Education {
+  id                     String    @id @default(cuid())
+  degree                 String?
+  school                 String?
+  startDate              DateTime?
+  endDate                DateTime?
+  isHighestQualification Boolean   @default(false)
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("educations")
+}
+
+model Project {
+  id          String    @id @default(cuid())
+  title       String?
+  description String[]  @default([])
+  // techStack   String[] // Array of technologies used in the project
+  link        String? // Optional link to the project (e.g., GitHub repo or live demo)
+  startDate   DateTime?
+  endDate     DateTime?
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model Skill {
+  id     String   @id @default(cuid())
+  label  String?
+  skills String[] @default([]) // Array of skills under a label
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("skills")
+}
+
+model PositionOfResponsibility {
+  id           String    @id @default(cuid())
+  position     String?
+  organization String?
+  startDate    DateTime?
+  endDate      DateTime?
+  description  String[]  @default([])
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("positions_of_responsibility")
+}

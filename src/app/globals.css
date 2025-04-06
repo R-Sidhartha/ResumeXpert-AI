@@ -1,10 +1,9 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 @layer base {
@@ -70,4 +69,20 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@media print {
+  #resumePreviewContent {
+    zoom: 1 !important;
+    padding: 0;
+  }
+}
+
+#resumePreviewContent {
+  font-family: Inter;
+}
+
+@page {
+  size: A4;
+  margin: 0.6cm;
 }
