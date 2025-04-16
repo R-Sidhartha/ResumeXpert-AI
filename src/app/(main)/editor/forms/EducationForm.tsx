@@ -124,6 +124,8 @@ export default function EducationForm({
                             onClick={() =>
                                 append({
                                     degree: "",
+                                    branch: "",
+                                    score: "",
                                     school: "",
                                     startDate: "",
                                     endDate: "",
@@ -209,6 +211,32 @@ function EducationItem({ id, form, index, remove, highestQualificationIndex,
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Degree</FormLabel>
+                        <FormControl>
+                            <Input {...field} autoFocus />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name={`educations.${index}.branch`}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Branch</FormLabel>
+                        <FormControl>
+                            <Input {...field} autoFocus />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name={`educations.${index}.score`}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Grade / Percentage</FormLabel>
                         <FormControl>
                             <Input {...field} autoFocus />
                         </FormControl>

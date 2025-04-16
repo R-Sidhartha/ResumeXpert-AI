@@ -26,8 +26,8 @@ export default function FeaturesSection() {
     return (
         <section className="py-24 bg-gray-50 dark:bg-zinc-900">
             <div className="max-w-6xl mx-auto text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-2 dark:text-zinc-200">Cutting-Edge Resume Technology at Your Fingertips</h2>
-                <p className="text-gray-600 dark:text-zinc-300"> Create a polished, professional resume with AI optimization, premium LaTeX templates, and ATS-friendly formatting.</p>
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 dark:text-zinc-200">Cutting-Edge Resume Technology at Your Fingertips</h2>
+                <p className="text-gray-600 dark:text-zinc-300 md:text-base text-sm px-2"> Create a polished, professional resume with AI optimization, premium LaTeX templates, and ATS-friendly formatting.</p>
             </div>
             <div className="container mx-auto flex flex-col lg:flex-row xl:flex-row justify-center gap-12 px-6 xl:px-12">
                 {/* Features List */}

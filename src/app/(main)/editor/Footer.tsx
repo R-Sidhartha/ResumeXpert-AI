@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 // import { cn } from "@/lib/utils";
 import { FileUserIcon, PenLineIcon } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 import { steps } from "./steps";
 import CompileButton from "@/components/CompileButton";
+import FinalSaveButton from "@/components/FinalSaveButton";
 
 interface FooterProps {
     currentStep: string;
@@ -12,8 +13,10 @@ interface FooterProps {
     setShowSmResumePreview: (show: boolean) => void;
     loading: boolean;
     handleCompile: () => void;
+    handleSave: () => Promise<string | undefined>;
     isSaving: boolean;
     allowedFields: string[];
+    pdfBytes: Uint8Array | null;
 }
 
 export default function Footer({
@@ -22,9 +25,11 @@ export default function Footer({
     showSmResumePreview,
     setShowSmResumePreview,
     handleCompile,
+    handleSave,
     loading,
     isSaving,
     allowedFields,
+    pdfBytes,
 }: FooterProps) {
     const filteredSteps = steps.filter((step) => allowedFields.includes(step.key));
     const currentIndex = filteredSteps.findIndex((step) => step.key === currentStep);
@@ -64,10 +69,15 @@ export default function Footer({
                     {showSmResumePreview ? <PenLineIcon /> : <FileUserIcon />}
                 </Button>
                 <div className="flex items-center gap-3">
-                    <CompileButton onClick={handleCompile} loading={loading} isSaving={isSaving} />
-                    <Button variant="secondary" asChild>
+                    <CompileButton onClick={handleCompile} loading={loading}
+                        isSaving={isSaving} />
+                    <FinalSaveButton
+                        handleSave={handleSave}
+                        pdfBytes={pdfBytes || new Uint8Array()}
+                    />
+                    {/* <Button variant="secondary" asChild>
                         <Link href="/resumes">Close</Link>
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
         </footer>

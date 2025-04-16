@@ -2,7 +2,7 @@
 // import prisma from "@/lib/prisma";
 // import { getUserSubscriptionLevel } from "@/lib/subscription";
 // import { resumeDataInclude } from "@/lib/types";
-import { auth } from "@clerk/nextjs/server";
+// import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import CreateResumeButton from "./CreateResumeButton";
 import { getUserResumes } from "./action";
@@ -15,11 +15,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const { userId } = await auth();
+    // const { userId } = await auth();
 
-    if (!userId) {
-        return null;
-    }
+    // if (!userId) {
+    //     return null;
+    // }
 
     const userResumes = await getUserResumes();
     if (!userResumes) {
@@ -46,9 +46,9 @@ export default async function Page() {
 
     return (
         <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
-            <div className="space-y-1 flex items-center justify-between w-full mt-5">
+            <div className="space-y-1 flex justify-between w-full mt-5">
                 <div>
-                    <h1 className="text-3xl font-bold">Your resumes</h1>
+                    <h1 className="text-xl sm:text-3xl font-bold">Your resumes</h1>
                     {userResumes && userResumes.resumes.length > 0 &&
                         <p>Total: {userResumes.count}</p>}
                 </div>

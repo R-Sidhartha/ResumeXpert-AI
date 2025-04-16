@@ -6,15 +6,19 @@ import {
   generatePORSchema,
   GenerateProjectsInput,
   generateProjectsSchema,
+  GenerateResumeDataInput,
+  generateResumeDataSchema,
   GenerateSummaryInput,
   generateSummarySchema,
   GenerateWorkExperienceInput,
   generateWorkExperienceSchema,
   POR,
   Projects,
+  ResumeValues,
   WorkExperience,
 } from "@/lib/validation";
 import { auth } from "@clerk/nextjs/server";
+import { toast } from "sonner";
 
 export async function generateSummary(input: GenerateSummaryInput) {
   const { userId } = await auth();
@@ -90,6 +94,7 @@ Guidelines:
 - Tailor it for the job title: "${jobTitle}"
 - Highlight major strengths and unique achievements
 - Include quantified metrics if possible (e.g., improved efficiency by 30%)
+- Wrap all impactful or important words that should be highlighted in the       resume using curly braces {}. Only wrap the most relevant words or phrases that make the achievements stand out.
 - Write no more than 50 words
 - Make it ATS-friendly and recruiter-attractive
 Return only the summary.
@@ -149,6 +154,7 @@ Guidelines for generating the bullet points in "description":
 - Focus on impact, accomplishments, and measurable outcomes.
 - Start with action verbs.
 - Include relevant tools, technologies, or methodologies where appropriate.
+- Wrap all impactful or achievement-focused words or phrases using curly braces {} to highlight them in the resume.
 - Use professional tone and ATS-optimized language.
 - Make sure the bullets are clear, concise, and impressive to recruiters.
 `;
@@ -246,6 +252,7 @@ export async function generateProject(input: GenerateProjectsInput) {
   - Follow strict format for start_date and end_date which is YYYY-MM-DD
   - For description bullet icons strictly use • and don't include start_date and end_date in description
   - Mention some advanced and important tech stack used and place them at necessary places in description bullet points
+  - Use curly braces {} to wrap technical terms, tools, metrics, or impactful outcomes that should be emphasized in the resume.
   - Do NOT return any other text or comments outside this structure.
   `;
 
@@ -311,6 +318,7 @@ export async function generatePOR(input: GeneratePORInput) {
   - Use active voice and action verbs
   - Include impact, leadership, coordination, or measurable outcomes
   - strictly Use • as bullet icon for description
+  - Highlight key leadership actions, roles, or achievements by wrapping them in curly braces {} for resume emphasis.
   - Do not include any irrelevant information
   `;
 
@@ -350,4 +358,122 @@ export async function generatePOR(input: GeneratePORInput) {
     endDate,
     description: descriptionArray,
   } satisfies POR;
+}
+
+export async function generateFormattedResume(input: GenerateResumeDataInput) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const { extractedText } = generateResumeDataSchema.parse(input);
+
+  const systemMessage = `
+You are an expert resume-parsing and formatting AI. Given a raw resume text, your job is to intelligently and accurately read and structure the extracted data into a strict JSON object with this exact shape (do NOT return markdown or extra commentary):
+
+{
+  firstName: string,
+  lastName: string,
+  phone: string,
+  email: string,
+
+  workExperiences: [
+    {
+      position: string,
+      company: string,
+      startDate: string, // YYYY-MM-DD
+      endDate: string,   // YYYY-MM-DD or Present
+      description: string[]
+    }
+  ],
+
+  Projects: [
+    {
+      title: string,
+      startDate: string,
+      endDate: string,
+      description: string[]
+    }
+  ],
+
+  POR: [
+    {
+      position: string,
+      organization: string,
+      startDate: string,
+      endDate: string,
+      description: string[]
+    }
+  ],
+
+  achievements: string[],
+  certifications: string[],
+  extraCurriculars: string[],
+
+  educations: [
+    {
+      degree: string,
+      school: string,
+      startDate: string,
+      endDate: string
+    }
+  ],
+
+  skills: [
+    {
+      label: string,     // like "Frontend", "Backend", "Languages"
+      skills: string[]   // like ["React", "Node.js"]
+    }
+  ],
+
+  summary: string,
+
+  customSections: [
+    {
+      title: string, // Name of the custom/extra section found
+      entries: [
+        {
+          heading: string, // mention if present and applicable or empty
+          subheading: string, // mention if present and applicable or empty
+          location: string, // mention if present and applicable or empty
+          startDate: string, // YYYY-MM-DD or empty
+          endDate: string,   // YYYY-MM-DD or Present or empty
+          description: string[]
+        }
+      ]
+    }
+  ]
+}
+
+Strict rules:
+- All date fields must be in YYYY-MM-DD format
+- All arrays must contain clean bullet-pointed strings(no markdown or symbols)
+- Return a VALID JSON object ONLY with type safety. No explanation, no markdown, no commentary.
+- Wrap important keywords, impactful actions, tools, metrics, or achievements using curly braces {} to emphasize them in the resume.
+- If any section in the extracted text does not match the known ones, include it under \`customSections\` using the structure above.
+- Importantly if any fields are hard to read and format, then leave them blank.
+`;
+
+  const userMessage = `Extracted Resume Text:\n${extractedText}`;
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: systemMessage },
+      { role: "user", content: userMessage },
+    ],
+  });
+
+  const aiText = completion.choices[0]?.message?.content;
+  console.log("aiText", aiText);
+  if (!aiText) {
+    toast.error("AI returned empty result");
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(aiText) as Partial<ResumeValues>;
+    return parsed;
+  } catch (error) {
+    console.error("Failed to parse AI response:", error);
+    toast.error("AI returned invalid JSON");
+    return null;
+  }
 }

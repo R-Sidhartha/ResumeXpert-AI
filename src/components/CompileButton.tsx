@@ -28,7 +28,7 @@ export default function CompileButton({ onClick, loading, isSaving }: CompileBut
             variant={"default"}
             disabled={loading || isSaving}
         >
-            {loading || isSaving ? "Compiling..." : "Save & Preview"}
+            {loading || isSaving ? "Compiling..." : "Compile & Preview"}
         </Button>
     );
 }

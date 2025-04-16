@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen">
       <Navbar />
-      <section className="relative -top-40 inset-0 -z-10 bg-green-100/70 dark:bg-zinc-800 w-full h-[60vh] md:h-[60vh] lg:h-[70vh] xl:h-[110vh] rounded-t-[100px] clip-shape">
+      <section className="relative -top-40 inset-0 -z-10 bg-green-100/70 dark:bg-zinc-800 w-full h-[74vh] md:h-[80vh] lg:h-[80vh] xl:h-[110vh] rounded-t-[100px] clip-shape">
         <div className="relative z-30 top-56 gap-3 text-center mx-auto flex flex-col items-center">
           <h1 className="text-2xl md:text-3xl lg:text-5xl tracking-tight font-bold mx-auto text-center font-poppins">
             Unlock Your Potential with <span className="text-green-700">ResumeXpert AI</span>

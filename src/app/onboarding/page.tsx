@@ -11,8 +11,8 @@ import { z } from "zod";
 const onboardingSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
-    github: z.string().url("GitHub must be a valid URL"),
-    linkedIn: z.string().url("LinkedIn must be a valid URL"),
+    github: z.string().url("GitHub must be a valid URL").optional(),
+    linkedIn: z.string().url("LinkedIn must be a valid URL").optional(),
 });
 
 export default function Onboarding() {
@@ -70,9 +70,6 @@ export default function Onboarding() {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                        This will be shown on your resume
-                    </p>
                 </div>
                 <div className="flex flex-col gap-2">
                     <Input
@@ -80,12 +77,11 @@ export default function Onboarding() {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                        This will be shown on your resume
-                    </p>
                 </div>
             </div>
-
+            <p className="text-xs text-muted-foreground mb-3 italic">
+                This information will be permanently associated with your resumes and cannot be modified later.
+            </p>
             <div className="flex flex-col gap-2">
                 <Input
                     placeholder="GitHub URL"

@@ -1,5 +1,6 @@
 "use server";
 
+import { deletePdfFromCloudinary } from "@/lib/cloudinary/delete";
 import { prisma } from "@/lib/prisma";
 import { resumeDataInclude } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
@@ -75,6 +76,15 @@ export async function deleteResume(id: string) {
 
   if (!resume) {
     throw new Error("Resume not found");
+  }
+
+  // ✅ Delete PDF from Cloudinary if publicId exists
+  if (resume.pdfPublicId) {
+    try {
+      await deletePdfFromCloudinary(resume.pdfPublicId);
+    } catch (err) {
+      console.error("Error deleting from Cloudinary:", err);
+    }
   }
 
   await prisma.resume.delete({

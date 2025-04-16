@@ -1,5 +1,4 @@
-// import ResumePreview from "@/components/ResumePreview";
-import ResumePreview from "@/components/ResumePreview";
+import ResumePreview from "./ResumePreview";
 import { cn } from "@/lib/utils";
 import { ResumeValues } from "@/lib/validation";
 // import BorderStyleButton from "./BorderStyleButton";
@@ -11,20 +10,23 @@ interface ResumePreviewSectionProps {
     className?: string;
     pdfSrc: string | null;
     loading: boolean;
-    // templateCode: string;
+    showInitialMessage?: boolean;
+    resumeId?: string;
 }
 
 export default function ResumePreviewSection({
-    resumeData,
+    // resumeData,
     pdfSrc,
     loading,
-    // templateCode,
     //   setResumeData,
     className,
+    showInitialMessage,
+    resumeId
 }: ResumePreviewSectionProps) {
+
     return (
         <div
-            className={cn("group relative hidden w-full md:flex md:w-1/2", className)}
+            className={cn("group relative z-50 hidden w-full md:flex md:w-1/2", className)}
         >
             <div className="absolute left-1 top-1 flex flex-none flex-col gap-3 opacity-50 transition-opacity group-hover:opacity-100 lg:left-3 lg:top-3 xl:opacity-100">
                 {/* <ColorPicker
@@ -42,11 +44,10 @@ export default function ResumePreviewSection({
             </div>
             <div className="flex w-full justify-center overflow-y-auto bg-secondary p-1">
                 <ResumePreview
-                    // templateCode={templateCode}
-                    resumeData={resumeData}
-                    pdfSrc={pdfSrc}
+                    pdfSrc={pdfSrc || ""}
                     loading={loading}
-                //   className="max-w-2xl shadow-md"
+                    showInitialMessage={showInitialMessage}
+                    resumeId={resumeId}
                 />
             </div>
         </div>

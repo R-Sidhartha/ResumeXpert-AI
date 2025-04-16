@@ -5,7 +5,7 @@ import img2 from "@/assets/image2.jpg";
 export default function ImageLayout() {
     return (
         <div className=" flex justify-center items-center">
-            <div className="relative w-11/12 md:w-[80%] h-[450px] sm:h-[550px] md:h-[600px]">
+            <div className="relative w-11/12 md:w-[80%] h-[350px] sm:h-[550px] md:h-[600px]">
                 {/* Left Image (Behind Middle) */}
                 <div className="absolute top-8 md:top-12 left-5 md:left-10 w-[45%] sm:w-[38%] md:w-[30%] z-0 shadow-md">
                     <Image

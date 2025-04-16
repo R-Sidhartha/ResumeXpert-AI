@@ -10,6 +10,8 @@ import PORForm from "./forms/PORForm";
 import CertificationForm from "./forms/CertificationForm";
 import ExtraCurricularForm from "./forms/ExtraCurricularForm";
 import AchievementForm from "./forms/AchievementForm";
+import FileUploadForm from "./forms/FileUploaderForm";
+import CustomSectionForm from "./forms/CustomSectionsForm";
 
 export const steps: {
   title: string;
@@ -17,6 +19,11 @@ export const steps: {
   key: string;
 }[] = [
   { title: "General info", component: GeneralInfoForm, key: "general-info" },
+  {
+    title: "Previous resume upload",
+    component: FileUploadForm,
+    key: "resume-upload",
+  },
   { title: "Personal info", component: PersonalInfoForm, key: "personal-info" },
   {
     title: "Work experience",
@@ -46,5 +53,10 @@ export const steps: {
     title: "Summary",
     component: SummaryForm,
     key: "summary",
+  },
+  {
+    title: "Custom Section",
+    component: CustomSectionForm,
+    key: "customSection",
   },
 ];

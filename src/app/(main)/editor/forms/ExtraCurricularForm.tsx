@@ -33,6 +33,7 @@ export default function ExtraCurricularForm({ resumeData, setResumeData }: Edito
                         .map((item) => item.trim())
                         .filter((item) => item !== "") || [],
             });
+            // setPdfBytes(null);
         });
         // console.log(resumeData)
         return unsubscribe;

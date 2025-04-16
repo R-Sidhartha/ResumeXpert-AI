@@ -9,6 +9,11 @@ export const fetchResumeTemplate = async (templateId: string) => {
   try {
     const templateData = await prisma.resumeTemplate.findUnique({
       where: { id: templateId },
+      select: {
+        id: true,
+        name: true,
+        template: true,
+      },
     });
 
     if (!templateData) {
@@ -51,20 +56,25 @@ export const getUserData = async (clerkId: string) => {
   }
 };
 
-export const savePdfSrcToDB = async (resumeId: string, pdfUrl: string) => {
-  if (!resumeId || !pdfUrl) {
-    throw new Error("Invalid resumeId or pdfUrl");
+export const getPdfUrl = async (resumeId: string) => {
+  if (!resumeId) {
+    throw new Error("Invalid resumeId");
   }
 
   try {
-    console.log("running the savePdfSrcToDB function");
-    await prisma.resume.update({
+    const resume = await prisma.resume.findUnique({
       where: { id: resumeId },
-      data: { pdfUrl },
+      select: { pdfUrl: true },
     });
+
+    if (!resume) {
+      throw new Error("Resume not found");
+    }
+
+    return resume.pdfUrl;
   } catch (error) {
-    console.error("Error updating resume PDF URL:", error);
-    throw new Error("Failed to update resume PDF URL.");
+    console.error("Error getting resume PDF URL:", error);
+    throw new Error("Failed to get resume PDF URL.");
   }
 };
 
@@ -111,6 +121,7 @@ export async function saveResume(values: ResumeValues) {
     achievements,
     extraCurriculars,
     certifications,
+    customSections,
     // customization,
     ...resumeValues
   } = resumeSchema.parse(values);
@@ -151,36 +162,6 @@ export async function saveResume(values: ResumeValues) {
   if (id && !existingResume) {
     throw new Error("Resume not found");
   }
-
-  // const hasCustomizations =
-  //   (resumeValues.borderStyle &&
-  //     resumeValues.borderStyle !== existingResume?.borderStyle) ||
-  //   (resumeValues.colorHex &&
-  //     resumeValues.colorHex !== existingResume?.colorHex);
-
-  // if (hasCustomizations && !canUseCustomizations(subscriptionLevel)) {
-  //   throw new Error("Customizations not allowed for this subscription level");
-  // }
-
-  // let newPhotoUrl: string | undefined | null = undefined;
-
-  // if (photo instanceof File) {
-  //   if (existingResume?.photoUrl) {
-  //     await del(existingResume.photoUrl);
-  //   }
-
-  //   const blob = await put(`resume_photos/${path.extname(photo.name)}`, photo, {
-  //     access: "public",
-  //   });
-
-  //   newPhotoUrl = blob.url;
-  // } else if (photo === null) {
-  //   if (existingResume?.photoUrl) {
-  //     await del(existingResume.photoUrl);
-  //   }
-  //   newPhotoUrl = null;
-  // }
-
   if (id) {
     return prisma.resume.update({
       where: { id },
@@ -239,6 +220,26 @@ export async function saveResume(values: ResumeValues) {
             ...skill,
           })),
         },
+        customSections: {
+          deleteMany: {},
+          create:
+            customSections?.map((section) => ({
+              title: section.title,
+              entries: {
+                create:
+                  section.entries?.map((entry) => ({
+                    heading: entry.heading,
+                    subheading: entry.subheading,
+                    location: entry.location,
+                    startDate: entry.startDate
+                      ? new Date(entry.startDate)
+                      : null,
+                    endDate: entry.endDate ? new Date(entry.endDate) : null,
+                    description: entry.description ?? [],
+                  })) ?? [],
+              },
+            })) ?? [],
+        },
         updatedAt: new Date(),
       },
     });
@@ -289,6 +290,25 @@ export async function saveResume(values: ResumeValues) {
           create: skills?.map((skill) => ({
             ...skill,
           })),
+        },
+        customSections: {
+          create:
+            customSections?.map((section) => ({
+              title: section.title,
+              entries: {
+                create:
+                  section.entries?.map((entry) => ({
+                    heading: entry.heading,
+                    subheading: entry.subheading,
+                    location: entry.location,
+                    startDate: entry.startDate
+                      ? new Date(entry.startDate)
+                      : null,
+                    endDate: entry.endDate ? new Date(entry.endDate) : null,
+                    description: entry.description ?? [],
+                  })) ?? [],
+              },
+            })) ?? [],
         },
       },
     });

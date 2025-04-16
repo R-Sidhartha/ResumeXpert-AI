@@ -4,7 +4,7 @@
 // import { ResumeServerData } from "@/lib/types";
 import {
     cn,
-    DEFAULT_CUSTOMIZATIONS,
+    // DEFAULT_CUSTOMIZATIONS,
     mapToResumeValues,
     // mapToResumeValues
 } from "@/lib/utils";
@@ -24,9 +24,15 @@ import useDebounce from "@/hooks/useDebounce";
 import useSaveResume from "@/hooks/useSaveResume";
 import useUnloadWarning from "@/hooks/useUnloadWarning";
 import { ResumeServerData } from "@/lib/types";
-import { savePdfSrcToDB } from "./action";
+// import { savePdfSrcToDB } from "./action";
 import CustomizationDialog from "@/components/CustomizationDialog";
-// import { fetchResumeTemplate } from "./action";
+import { generateBreeze } from "@/lib/latexTemplateUtils/generateBreeze";
+import { toast } from "sonner";
+import { getCustomizationForTemplate } from "@/lib/customization";
+import { generateMinimalist } from "@/lib/latexTemplateUtils/generateMinimalist";
+import { generateSlate } from "@/lib/latexTemplateUtils/generateSlate";
+import { generateImpactPro } from "@/lib/latexTemplateUtils/generateImpactPro";
+import { generateStacked } from "@/lib/latexTemplateUtils/generateStacked";
 
 
 interface ResumeEditorProps {
@@ -49,8 +55,12 @@ interface ResumeEditorProps {
 const templateGenerators: Record<string, (template: string, data: ResumeValues) => string> = {
     sleek: generateSleek,
     professional: generateProfessional,
-    // minimalist: generateMinimalist,
-    // Add other templates here...
+    breeze: generateBreeze,
+    minimalist: generateMinimalist,
+    slate: generateSlate,
+    impactpro: generateImpactPro,
+    stacked: generateStacked
+
 };
 
 export default function ResumeEditor(
@@ -60,7 +70,7 @@ export default function ResumeEditor(
 
     const [resumeData, setResumeData] = useState<ResumeValues>(
         resumeToEdit ? mapToResumeValues(resumeToEdit) : {
-            resumeTemplateId: templateData.id, customization: customizations, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn
+            resumeTemplateId: templateData.id, customization: customizations, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn, customSections: [],
         }
     );
     const [showSmResumePreview, setShowSmResumePreview] = useState(false);
@@ -69,10 +79,12 @@ export default function ResumeEditor(
     // const [latexCode, setLatexCode] = useState<string>(``);
     const [pdfSrc, setPdfSrc] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [showInitialMessage, setShowInitialMessage] = useState(true);
+    const [pdfBytes, setPdfBytes] = useState<Uint8Array | null>(null);
+
     const engineRef = useRef<any>(null);
 
     const debouncedResumeData = useDebounce(resumeData, 1000);
-
 
     const currentStep = searchParams.get("step") || steps[0].key;
 
@@ -82,23 +94,7 @@ export default function ResumeEditor(
         window.history.pushState(null, "", `?${newSearchParams.toString()}`);
     }
 
-    // useEffect(() => {
-    //     const fetchLatexTemplate = async () => {
-    //         try {
-    //             console.log("calling funtion")
-    //             console.log(templateId)
-    //             const template = await fetchResumeTemplate(templateId)
-
-    //             if (template) {
-    //                 setTemplateCode(template);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching template:", error);
-    //         }
-    //     };
-
-    //     fetchLatexTemplate();
-    // }, [templateId]);
+    const defaultCustomization = getCustomizationForTemplate(templateData.name);
 
     useEffect(() => {
         const generateLatex = templateGenerators[templateData.name] || (() => "");
@@ -139,13 +135,12 @@ export default function ResumeEditor(
     }, []);
 
     // Compile LaTeX code
-    const handleCompile = async (resumeId: string) => {
-
+    const handleCompile = async () => {
         setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1100));
 
         if (!engineRef.current || !engineRef.current.isReady()) {
-            alert("Engine is not ready yet. Please wait.");
+            toast.warning("Engine is not ready yet. Please wait.");
+            setLoading(false);
             return;
         }
 
@@ -153,36 +148,40 @@ export default function ResumeEditor(
             engineRef.current.flushCache();
             engineRef.current.writeMemFSFile("main.tex", latexCode);
             engineRef.current.setEngineMainFile("main.tex");
+
             const result = await engineRef.current.compileLaTeX();
 
             if (result && result.pdf) {
+                setPdfBytes(result.pdf);
                 const pdfBlob = new Blob([result.pdf], { type: "application/pdf" });
                 const pdfUrl = URL.createObjectURL(pdfBlob);
                 setPdfSrc(pdfUrl);
-                // Store in database
-                // Store in database
-                console.log("Saving PDF URL to DB for resume:", resumeId);
-                await savePdfSrcToDB(resumeId, pdfUrl);
-                console.log("PDF URL saved successfully.");
+                // await savePdfSrcToDB(resumeId, pdfUrl);
             } else {
-                console.error("No PDF output from compilation.");
-                alert("Compilation failed: No PDF output.");
+                toast.error("Compilation failed: No PDF output.");
             }
+
+            setShowInitialMessage(false);
         } catch (error) {
             console.error("Compilation error:", error);
-            alert("Failed to compile LaTeX. Check the console for more details.");
+            toast.error("Failed to compile LaTeX. Check the console for more details.");
         } finally {
             setLoading(false);
         }
     };
 
-    const { isSaving, hasUnsavedChanges, handleSaveAndCompile } = useSaveResume({
+
+    const {
+        isSaving,
+        // isError,
+        hasUnsavedChanges,
+        handleSaveOnly,
+    } = useSaveResume({
         resumeData: resumeData,
-        handleCompile: handleCompile
+        setPdfBytes: setPdfBytes
     });
+
     useUnloadWarning(hasUnsavedChanges);
-
-
 
 
     // const FormComponent = steps.find(
@@ -190,8 +189,13 @@ export default function ResumeEditor(
     // )?.component;
 
     const templateFieldMap: Record<string, string[]> = {
-        "sleek": ["general-info", "personal-info", "work-experience", "education", "projects", "skills", "extra-curricular"],
-        "professional": ["general-info", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities"],
+        "sleek": ["general-info", "resume-upload", "personal-info", "work-experience", "education", "certifications", "projects", "skills", "position-of-responsibilities", "extra-curricular", "customSection"],
+        "professional": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "extra-curricular", "customSection"],
+        "breeze": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
+        "minimalist": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
+        "slate": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
+        "impactpro": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
+        "stacked": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
     };
 
     const allowedFields = templateFieldMap[templateData.name] || [];
@@ -211,13 +215,14 @@ export default function ResumeEditor(
     // Get the Form Component
     const FormComponent = filteredSteps.find(step => step.key === safeCurrentStep)?.component;
 
+    console.log("resumeData for testing", resumeData)
+
     return (
         <div className="flex grow flex-col">
             <header className="space-y-1.5 border-b px-3 py-5 text-center">
-                <h1 className="text-2xl font-bold">Design your resume</h1>
+                <h1 className="text-2xl font-bold">Customize and finalize your resume</h1>
                 <p className="text-sm text-muted-foreground">
-                    Follow the steps below to create your resume. Your progress will be
-                    saved automatically.
+                    Edit your information, preview the layout instantly, and click <span className="text-green-800 dark:text-green-600 font-bold">Save</span> when you&apos;re ready to save and Upload your final resume.
                 </p>
             </header>
             <main className="relative grow">
@@ -233,6 +238,7 @@ export default function ResumeEditor(
                             <FormComponent
                                 resumeData={resumeData}
                                 setResumeData={setResumeData}
+                            // setPdfBytes={setPdfBytes}
                             />
                         )}
                         {/* <CustomizationPanel
@@ -253,11 +259,13 @@ export default function ResumeEditor(
                         className={cn(showSmResumePreview && "flex")}
                         pdfSrc={pdfSrc}
                         loading={loading}
+                        showInitialMessage={showInitialMessage}
+                        resumeId={resumeToEdit?.id}
                     />
 
                     <div className="absolute bottom-6 right-6 z-50">
                         <CustomizationDialog
-                            value={{ ...DEFAULT_CUSTOMIZATIONS, ...(resumeData?.customization || {}) }}
+                            value={{ ...defaultCustomization, ...(resumeData?.customization || {}) }}
                             onChange={(newCustomizations) =>
                                 setResumeData((prev) => ({
                                     ...prev,
@@ -266,6 +274,7 @@ export default function ResumeEditor(
                             }
                             buttonClassName="rounded-full p-3 bg-white shadow-lg hover:bg-gray-50 transition"
                             canCustomize={true}
+                            defaultCustomization={defaultCustomization}
                         />
                     </div>
                 </div>
@@ -276,9 +285,11 @@ export default function ResumeEditor(
                 allowedFields={allowedFields}
                 showSmResumePreview={showSmResumePreview}
                 setShowSmResumePreview={setShowSmResumePreview}
-                handleCompile={handleSaveAndCompile}
+                handleCompile={handleCompile}
+                handleSave={handleSaveOnly}
                 loading={loading}
                 isSaving={isSaving}
+                pdfBytes={pdfBytes}
             />
         </div>
     );

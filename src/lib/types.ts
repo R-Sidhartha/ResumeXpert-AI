@@ -4,6 +4,7 @@ import { ResumeValues } from "./validation";
 export interface EditorFormProps {
   resumeData: ResumeValues;
   setResumeData: (data: ResumeValues) => void;
+  // setPdfBytes: (bytes: Uint8Array | null) => void;
 }
 
 export const resumeDataInclude = {
@@ -14,6 +15,11 @@ export const resumeDataInclude = {
   skills: true,
   resumeTemplate: true,
   customization: true,
+  customSections: {
+    include: {
+      entries: true,
+    },
+  },
 } satisfies Prisma.ResumeInclude;
 
 export type ResumeServerData = Prisma.ResumeGetPayload<{

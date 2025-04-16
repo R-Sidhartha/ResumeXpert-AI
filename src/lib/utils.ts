@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ResumeServerData } from "./types";
-import { CustomizationValues, ResumeValues } from "./validation";
+import { ResumeValues } from "./validation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,15 +19,15 @@ export function formatYear(dateString?: string) {
   return date.getFullYear().toString(); // Extract only the year
 }
 
-export const DEFAULT_CUSTOMIZATIONS: CustomizationValues = {
-  bulletIcon: "\\faAngleRight",
-  color: "0.25, 0.5, 0.75",
-  margin: "0.75in",
-  lineSpacing: "1.0",
-  sectionSpacing: "0pt",
-  itemSpacing: "2pt",
-  fontSize: "10pt",
-};
+// export const DEFAULT_CUSTOMIZATIONS: CustomizationValues = {
+//   bulletIcon: "\\faAngleRight",
+//   color: "0.25, 0.5, 0.75",
+//   margin: "0.75in",
+//   lineSpacing: "1.0",
+//   sectionSpacing: "0pt",
+//   itemSpacing: "2pt",
+//   fontSize: "10pt",
+// };
 
 export function hexToRgbFloat(hex: string): string {
   // Remove '#' if present
@@ -64,6 +64,67 @@ export function rgbFloatToHex(rgb: string): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
+// 🔐 Escape LaTeX special characters
+export function highlightAndEscapeLatex(input: string | undefined): string {
+  if (!input) return "";
+
+  const HIGHLIGHT_REGEX = /\{([^{}]+)\}/g;
+  const highlightPlaceholders: string[] = [];
+
+  // Step 1: Replace {word} with placeholder
+  const withPlaceholders = input.replace(HIGHLIGHT_REGEX, (_, word) => {
+    const placeholder = `<<HIGHLIGHT_${highlightPlaceholders.length}>>`;
+    highlightPlaceholders.push(word);
+    return placeholder;
+  });
+
+  // Step 2: Split by placeholders
+  const parts = withPlaceholders.split(/(<<HIGHLIGHT_\d+>>)/g);
+
+  // Step 3: Process each part
+  const processed = parts
+    .map((part) => {
+      const match = part.match(/^<<HIGHLIGHT_(\d+)>>$/);
+      if (match) {
+        // Restore placeholder with escaped bold text
+        const index = parseInt(match[1], 10);
+        const raw = highlightPlaceholders[index];
+        const escaped = escapeLatex(raw);
+        return `\\textbf{${escaped}}`;
+      } else {
+        // Escape normal text
+        return escapeLatex(part);
+      }
+    })
+    .join("");
+
+  return processed;
+}
+
+// Helper to escape LaTeX
+function escapeLatex(str: string): string {
+  return str
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/%/g, "\\%")
+    .replace(/&/g, "\\&")
+    .replace(/\$/g, "\\$")
+    .replace(/#/g, "\\#")
+    .replace(/_/g, "\\_")
+    .replace(/{/g, "\\{")
+    .replace(/}/g, "\\}")
+    .replace(/\^/g, "\\^{}")
+    .replace(/~/g, "\\~{}");
+}
+
+export const getScoreLabel = (score: string | undefined) => {
+  if (!score) return "";
+  const trimmed = score.trim();
+  if (trimmed.includes("%")) return "Percentage";
+  if (trimmed.includes("/")) return "GPA";
+  if (!isNaN(Number(trimmed))) return "GPA"; // fallback
+  return ""; // unknown format
+};
+
 export function mapToResumeValues(data: ResumeServerData): ResumeValues {
   return {
     id: data.id,
@@ -93,6 +154,8 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
           sectionSpacing: data.customization.sectionSpacing ?? undefined,
           itemSpacing: data.customization.itemSpacing ?? undefined,
           color: data.customization.color ?? undefined,
+          wordSpacing: data.customization.wordSpacing ?? undefined,
+          sectionOrder: data.customization.sectionOrder ?? undefined,
         }
       : undefined,
     workExperiences: data.workExperiences.map((exp) => ({
@@ -129,5 +192,63 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
     borderStyle: data.borderStyle,
     colorHex: data.colorHex,
     summary: data.summary || undefined,
+    customSections: data?.customSections
+      ? data?.customSections?.map((section) => ({
+          title: section.title || undefined,
+          entries: Array.isArray(section.entries)
+            ? section.entries.map((entry) => ({
+                heading: entry.heading || undefined,
+                subheading: entry.subheading || undefined,
+                location: entry.location || undefined,
+                startDate:
+                  entry.startDate?.toISOString().split("T")[0] || undefined,
+                endDate:
+                  entry.endDate?.toISOString().split("T")[0] || undefined,
+                description: entry.description || undefined,
+              }))
+            : [],
+        }))
+      : [], // If no customSections, default to an empty array
   };
+}
+
+export const mergeAIContentIntoResumeData = (
+  resumeData: ResumeValues,
+  aiText: Partial<ResumeValues>,
+): ResumeValues => {
+  return {
+    ...resumeData,
+
+    // Overwrite scalar fields
+    phone: aiText.phone ?? resumeData.phone,
+    email: aiText.email ?? resumeData.email,
+    summary: aiText.summary ?? resumeData.summary,
+
+    // Overwrite arrays entirely if provided
+    workExperiences: aiText.workExperiences ?? resumeData.workExperiences ?? [],
+    Projects: aiText.Projects ?? resumeData.Projects ?? [],
+    POR: aiText.POR ?? resumeData.POR ?? [],
+    certifications: aiText.certifications ?? resumeData.certifications ?? [],
+    extraCurriculars:
+      aiText.extraCurriculars ?? resumeData.extraCurriculars ?? [],
+    achievements: aiText.achievements ?? resumeData.achievements ?? [],
+    educations: aiText.educations ?? resumeData.educations ?? [],
+    skills: aiText.skills ?? resumeData.skills ?? [],
+  };
+};
+
+export function injectOrderedSections({
+  template,
+  sectionOrder,
+  sectionMap,
+}: {
+  template: string;
+  sectionOrder: string[];
+  sectionMap: Record<string, string>;
+}): string {
+  const orderedSections = sectionOrder
+    .map((sectionKey) => sectionMap[sectionKey.toUpperCase()] || "")
+    .join("\n\n");
+
+  return template.replace("<<DYNAMIC_SECTIONS>>", orderedSections);
 }

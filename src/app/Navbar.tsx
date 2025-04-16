@@ -29,7 +29,7 @@ export default function Navbar() {
             <div className="mx-auto flex w-full lg:max-w-7xl items-center justify-between gap-3 p-3">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                    <Image src={logo} alt="Logo" width={40} height={40} />
+                    {/* <Image src={logo} alt="Logo" width={40} height={40} /> */}
                     <span className="text-base md:text-xl font-semibold md:font-bold tracking-tight">
                         ResumeXpert AI
                     </span>

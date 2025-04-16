@@ -1,4 +1,3 @@
-"use client";
 
 import Image, { StaticImageData } from "next/image";
 import { motion, useInView } from "framer-motion";
@@ -11,10 +10,10 @@ import successImage from "@/assets/jobApply.webp";
 
 export default function StepFlow() {
     return (
-        <section className="pt-12 pb-20 bg-white w-full dark:bg-black">
+        <section className="mt-0 md:mt-12 mb-20 bg-white w-full dark:bg-black">
             <div className="max-w-6xl mx-auto text-center mb-16">
-                <h2 className="text-4xl font-bold text-gray-900 mb-2 dark:text-zinc-200">Effortless Resume Creation in Simple Steps</h2>
-                <p className="text-gray-600 dark:text-zinc-300">From template selection to AI-powered optimization—our streamlined process ensures a professional resume in minutes.</p>
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 dark:text-zinc-200">Effortless Resume Creation in Simple Steps</h2>
+                <p className="text-gray-600 dark:text-zinc-300 md:text-base text-sm px-2">From template selection to AI-powered optimization—our streamlined process ensures a professional resume in minutes.</p>
             </div>
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row gap-10 items-center justify-center">

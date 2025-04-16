@@ -5,18 +5,16 @@ import useDebounce from "@/hooks/useDebounce";
 import { ResumeValues } from "@/lib/validation";
 import { saveResume } from "@/app/(main)/editor/action";
 import { toast } from "sonner";
-// import { useSearchParams } from "next/navigation";
 
 interface UseSaveResumeProps {
   resumeData: ResumeValues;
-  handleCompile: (id: string) => void; // Function to compile after saving
+  setPdfBytes: (bytes: Uint8Array | null) => void;
 }
 
 export default function useSaveResume({
   resumeData,
-  handleCompile,
+  setPdfBytes,
 }: UseSaveResumeProps) {
-  // const searchParams = useSearchParams();
   const debouncedResumeData = useDebounce(resumeData, 1000);
   const [resumeId, setResumeId] = useState(resumeData.id || "");
   const [lastSavedData, setLastSavedData] = useState(
@@ -31,51 +29,54 @@ export default function useSaveResume({
   useEffect(() => {
     if (!isSaving) {
       setIsError(false); // Reset error when new changes are detected
+      if (hasUnsavedChanges) {
+        // Invalidate existing compiled PDF when user changes resume content
+        setPdfBytes(null);
+      }
     }
-  }, [debouncedResumeData, isSaving]);
+  }, [debouncedResumeData, isSaving, setPdfBytes, hasUnsavedChanges]);
 
-  const handleSaveAndCompile = async () => {
-    // if (!hasUnsavedChanges) {
-    //   handleCompile(resumeId); // Compile immediately if no changes
-    //   return;
-    // }
+  // ✅ Save Only - Call on Finish button
+  const handleSaveOnly = async () => {
+    if (!hasUnsavedChanges) {
+      toast.info("No changes to save.");
+      return;
+    }
 
     try {
       setIsSaving(true);
       setIsError(false);
 
       const newData = structuredClone(debouncedResumeData);
-
+      // Check if there are unsaved changes and compile the resume
       const updatedResume = await saveResume({
         ...newData,
         id: resumeId,
         resumeTemplateId: newData.resumeTemplateId,
       });
 
-      // Only update resumeId if it has changed
       const finalResumeId = updatedResume.id;
       setResumeId((prevId) =>
         prevId !== finalResumeId ? finalResumeId : prevId,
       );
       setLastSavedData(newData);
 
-      // Only update URL if resumeId has changed
-      // if (searchParams.get("resumeId") !== updatedResume.id) {
-      //   const newSearchParams = new URLSearchParams(searchParams);
-      //   newSearchParams.set("resumeId", updatedResume.id);
-      //   window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
-      // }
-
       toast.success("Resume saved successfully!");
-      handleCompile(finalResumeId); // Compile after successful save
+      return finalResumeId || "";
     } catch (error) {
       setIsError(true);
-      console.error(error);
+      console.error("Save error:", error);
       toast.error("Error occurred while saving the resume. Please try again.");
+      return resumeId || "";
     } finally {
       setIsSaving(false);
     }
   };
 
-  return { isSaving, hasUnsavedChanges, isError, handleSaveAndCompile };
+  return {
+    isSaving,
+    isError,
+    hasUnsavedChanges,
+    handleSaveOnly,
+  };
 }

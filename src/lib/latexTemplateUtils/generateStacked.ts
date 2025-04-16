@@ -7,26 +7,27 @@ import {
 } from "../utils";
 import { ResumeValues } from "../validation";
 
-export function generateSleek(
+export function generateStacked(
   template: string,
   resumeData: ResumeValues,
 ): string {
   const placeholders: { [key: string]: string } = {
     "<<FONT_SIZE>>": resumeData.customization?.fontSize || "10pt",
-    "<<PAGE_MARGIN>>": resumeData.customization?.margin || "0.4in",
-    "<<LINE_SPACING>>": resumeData.customization?.lineSpacing || "1.0",
+    "<<PAGE_MARGIN>>": resumeData.customization?.margin || "0.7in",
+    "<<LINE_SPACING>>": resumeData.customization?.lineSpacing || "1.1",
     "<<SECTION_SPACING>>": resumeData.customization?.sectionSpacing || "0pt",
-    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "2pt",
-    "<<BULLET_ICON>>": resumeData.customization?.bulletIcon || "\\faAngleRight",
+    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "0pt",
+    "<<BULLET_ICON>>": resumeData.customization?.bulletIcon || "$\\circ$",
     "<<RGB>>": resumeData.customization?.color || "0.25, 0.5, 0.75",
-    "<<WORD_SPACING>>": resumeData.customization?.wordSpacing || "3pt",
-    "<<NAME>>": `${highlightAndEscapeLatex(resumeData.firstName || "John")} ~ ${highlightAndEscapeLatex(resumeData.lastName || "")}`,
+    "<<WORD_SPACING>>": resumeData.customization?.wordSpacing || "5pt",
+    "<<NAME>>": `${highlightAndEscapeLatex(resumeData.firstName || "John")} ${highlightAndEscapeLatex(resumeData.lastName || "")}`,
     "<<EMAIL>>": highlightAndEscapeLatex(
       resumeData.email || "example@gmail.com",
     ),
     "<<PHONE>>": highlightAndEscapeLatex(resumeData.phone || "+1234567890"),
     "<<PORTFOLIO>>": resumeData.portfolio
-      ? `\\faGlobe~\\href{${highlightAndEscapeLatex(resumeData.portfolio)}}{Portfolio} \\quad`
+      ? `\\href{${highlightAndEscapeLatex(resumeData.portfolio)}}{
+    \\raisebox{-0.05\\height} \\faGlobe {Portfolio}} ~ | ~`
       : "",
     "<<LINKEDIN>>": highlightAndEscapeLatex(
       resumeData.linkedIn || "https://linkedin.com/in/johndoe",
@@ -35,8 +36,8 @@ export function generateSleek(
       resumeData.github || "https://github.com/johndoe",
     ),
     "<<SUMMARY>>": resumeData.summary
-      ? ` \\section{Summary} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
-  `
+      ? ` \\tinysection{Summary} \\vspace{6pt} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
+    `
       : ``,
     "<<EDUCATION>>":
       resumeData.educations && resumeData.educations.length > 0
@@ -44,9 +45,9 @@ export function generateSleek(
        ${resumeData.educations
          .map(
            (edu) =>
-             `\\textbf{${highlightAndEscapeLatex(edu.degree)}} ${edu.score ? `~|~ ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score)}` : ``} \\hfill ${formatYear(
+             `\\headingBf{${highlightAndEscapeLatex(edu.degree)}}{${formatYear(
                edu.startDate,
-             )} - ${formatYear(edu.endDate) || "Present"} \\\\ ${highlightAndEscapeLatex(edu.school)}`,
+             )} - ${formatYear(edu.endDate) || "Present"}} \\\\ \\headingIt{${highlightAndEscapeLatex(edu.school)} ${highlightAndEscapeLatex(edu.score) ? `~ ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score) || ""}` : ""}}{}`,
          )
          .join("\\\\")}
           \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
@@ -57,7 +58,7 @@ export function generateSleek(
           resumeData.skills
             .map(
               (skillGroup) =>
-                `\\item \\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
+                `\\item [\\textbf{${highlightAndEscapeLatex(skillGroup.label)}:}] ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
             )
             .join(" ") +
           ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
@@ -67,51 +68,57 @@ export function generateSleek(
                 ${resumeData.workExperiences
                   ?.map(
                     (exp) =>
-                      `\\subsection{${highlightAndEscapeLatex(exp.position)} $|$ ${highlightAndEscapeLatex(exp.company)} \\hfill ${formatDate(exp.startDate)} - ${formatDate(exp.endDate) || "Present"}} ` +
-                      `\\begin{itemize} ` +
+                      `\\headingBf{${highlightAndEscapeLatex(exp.position)}}{${formatDate(exp.startDate)} - ${formatDate(exp.endDate) || "Present"}} \\headingIt{${exp.company}}{}` +
+                      `\\begin{resume_list} ` +
                       (exp.description
                         ?.map(
                           (desc) => `\\item ${highlightAndEscapeLatex(desc)}`,
                         )
                         .join(" ") ||
                         `\\item Worked on key projects and delivered high-quality results.`) +
-                      ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`,
+                      ` \\end{resume_list} `,
                   )
-                  .join(" ")}`
+                  .join(
+                    " ",
+                  )} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : "",
-    "<<PROJECTS>>": resumeData.Projects?.length
+    "<<PROJECTS>>": resumeData.workExperiences?.length
       ? `\\section{Projects}
       ${resumeData.Projects?.map(
         (proj) =>
-          `\\subsection{${highlightAndEscapeLatex(proj.title)}${proj.link ? ` $|$ \\href{${highlightAndEscapeLatex(proj.link)}}{\\small\\faGlobe}` : ""}}` +
-          `\\begin{itemize} ` +
+          `\\headingBf{${highlightAndEscapeLatex(proj.title)}${proj.link ? ` | \\href{${highlightAndEscapeLatex(proj.link)}}{\\small\\faGlobe}` : ""}}{${formatDate(proj.startDate)} - ${formatDate(proj.endDate) || "Present"}}` +
+          `\\begin{resume_list} ` +
           (proj.description
             ?.map((desc) => `\\item ${highlightAndEscapeLatex(desc)}`)
             .join(" ") || `\\item Developed using modern web technologies.`) +
-          ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`,
-      ).join(" ")}`
+          ` \\end{resume_list}`,
+      ).join(
+        " ",
+      )} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : "",
     "<<POR>>": resumeData.POR?.length
       ? `\\section{Positions of Responsibility}
       ${resumeData.POR?.map(
         (por) =>
-          `\\subsection{${highlightAndEscapeLatex(por.position)} $|$ ${highlightAndEscapeLatex(por.organization)} \\hfill ${formatDate(por.startDate)} - ${formatDate(por.endDate) || "Present"}}` +
-          `\\begin{itemize} ` +
+          `\\headingBf{${highlightAndEscapeLatex(por.position)}}{${formatDate(por.startDate)} - ${formatDate(por.endDate) || "Present"}} \\headingIt{${por.organization}}{}` +
+          `\\begin{resume_list} ` +
           (por.description
             ?.map((desc) => `\\item ${highlightAndEscapeLatex(desc)}`)
             .join(" ") ||
             `\\Conducted pre-fest events by leading a team of 30`) +
-          ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`,
-      ).join(" ")}`
+          ` \\end{resume_list}`,
+      ).join(
+        " ",
+      )} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `\\section{Extra Curricular} \\begin{itemize} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize}`
+      ? `\\section{Extra Curricular} \\vspace{6pt} \\begin{resume_list} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{resume_list} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `\\section{Achievements} \\begin{itemize} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{Achievements} \\vspace{6pt} \\begin{resume_list} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{resume_list} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `\\section{Certifications} \\begin{itemize} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{Certifications} \\vspace{6pt} \\begin{resume_list} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{resume_list} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CUSTOM_SECTIONS>>": resumeData.customSections?.length
       ? resumeData.customSections
@@ -124,23 +131,27 @@ export function generateSleek(
                           (entry) =>
                             `${
                               entry.heading
-                                ? `\\subsection{${highlightAndEscapeLatex(entry.heading)} $|$ ${highlightAndEscapeLatex(
-                                    entry.subheading || "",
-                                  )} ${entry.startDate ? `\\hfill ${formatDate(entry.startDate) || ""} - ${formatDate(entry.endDate) || "Present"}` : ""}}`
+                                ? `\\headingBf{${highlightAndEscapeLatex(entry.heading)}}{${entry.startDate ? `${formatDate(entry.startDate) || ""} - ${formatDate(entry.endDate) || "Present"}` : ""}} ${
+                                    entry.subheading
+                                      ? `\\headingIt{${highlightAndEscapeLatex(
+                                          entry.subheading || "",
+                                        )}}{}`
+                                      : ""
+                                  }`
                                 : ""
                             } ` +
-                            `\\begin{itemize} ${
+                            `\\begin{resume_list} ${
                               entry.description
                                 ?.map(
                                   (desc) =>
                                     `\\item ${highlightAndEscapeLatex(desc)}`,
                                 )
                                 .join(" ") || "\\item Description goes here"
-                            } \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`,
+                            } \\end{resume_list}`,
                         )
                         .join(" ")
                     : ""
-                }`
+                } \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
               : "",
           )
           .join(" ")

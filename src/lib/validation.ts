@@ -42,6 +42,7 @@ export const workExperienceSchema = z.object({
       z.object({
         position: optionalString,
         company: optionalString,
+        location: optionalString,
         startDate: optionalString,
         endDate: optionalString,
         description: z.array(z.string()).default([]),
@@ -63,6 +64,7 @@ export const projectsSchema = z.object({
         title: optionalString,
         description: z.array(z.string()).default([]),
         link: optionalString,
+        gitLink: optionalString,
         startDate: optionalString,
         endDate: optionalString,
       }),
@@ -116,7 +118,8 @@ export const educationSchema = z.object({
       z.object({
         degree: optionalString,
         school: optionalString,
-        link: optionalString,
+        score: optionalString,
+        branch: optionalString,
         startDate: optionalString,
         endDate: optionalString,
         isHighestQualification: z.boolean().optional(),
@@ -154,9 +157,37 @@ export const customizationSchema = z.object({
   lineSpacing: optionalString,
   sectionSpacing: optionalString,
   itemSpacing: optionalString,
+  wordSpacing: optionalString,
+  sectionOrder: z.array(z.string().trim()).optional(),
 });
 
 export type CustomizationValues = z.infer<typeof customizationSchema>;
+
+export const customSectionSchema = z.object({
+  customSections: z
+    .array(
+      z.object({
+        title: optionalString,
+        entries: z.array(
+          z.object({
+            heading: optionalString,
+            subheading: optionalString,
+            location: optionalString,
+            startDate: optionalString,
+            endDate: optionalString,
+            description: z.array(z.string().trim()).optional(),
+          }),
+        ),
+      }),
+    )
+    .optional(),
+});
+
+export type CustomSectionValues = z.infer<typeof customSectionSchema>;
+
+export type CustomSection = NonNullable<
+  z.infer<typeof customSectionSchema>["customSections"]
+>[number];
 
 export const resumeSchema = z.object({
   ...generalInfoSchema.shape,
@@ -170,11 +201,13 @@ export const resumeSchema = z.object({
   ...educationSchema.shape,
   ...skillsSchema.shape,
   ...summarySchema.shape,
+  ...customSectionSchema.shape,
   colorHex: optionalString,
   borderStyle: optionalString,
   resumeTemplateId: z.string(),
   pdfUrl: optionalString,
   imgUrl: optionalString,
+  pdfPublicId: optionalString,
 });
 
 export const resumeTemplateSchema = z.object({
@@ -242,3 +275,13 @@ export const generateSummarySchema = z.object({
 });
 
 export type GenerateSummaryInput = z.infer<typeof generateSummarySchema>;
+
+export const generateResumeDataSchema = z.object({
+  extractedText: z
+    .string()
+    .trim()
+    .min(20, "Extracted text must be at least 20 characters"),
+  resumeTemplateId: optionalString, // Optional: For template-aware generation
+});
+
+export type GenerateResumeDataInput = z.infer<typeof generateResumeDataSchema>;

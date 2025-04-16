@@ -13,7 +13,7 @@ import { Sparkles } from "lucide-react";
 import CustomizationPanel from "./CustomizationPanel";
 import { CustomizationValues } from "@/lib/validation";
 import { useState } from "react";
-import { DEFAULT_CUSTOMIZATIONS } from "@/lib/utils";
+// import { DEFAULT_CUSTOMIZATIONS } from "@/lib/utils";
 import usePremiumModal from "@/hooks/usePremiumModal";
 
 
@@ -22,13 +22,15 @@ type Props = {
     onChange: (newValue: CustomizationValues) => void;
     buttonClassName?: string; // optional custom button styling
     canCustomize: boolean; // whether the user can customize or not
+    defaultCustomization: CustomizationValues
 };
 
 export default function CustomizationDialog({
     value,
     onChange,
     buttonClassName = "",
-    canCustomize
+    canCustomize,
+    defaultCustomization
 }: Props) {
     const [open, setOpen] = useState(false);
     const premiumModal = usePremiumModal();
@@ -39,7 +41,7 @@ export default function CustomizationDialog({
     };
 
     const handleReset = () => {
-        onChange(DEFAULT_CUSTOMIZATIONS); // reset to default
+        onChange(defaultCustomization); // reset to default
     };
 
     const handleOpen = () => {
@@ -64,7 +66,7 @@ export default function CustomizationDialog({
                 <Dialog open={open} onOpenChange={setOpen}>
                     {/* <DialogTrigger asChild>
             </DialogTrigger> */}
-                    <DialogContent className="max-w-3xl sm:max-w-2xl rounded-2xl shadow-lg border">
+                    <DialogContent className="max-w-3xl sm:max-w-2xl rounded-2xl shadow-lg border max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle className="text-xl font-bold">Customize Resume Style</DialogTitle>
                             <DialogDescription>
@@ -72,6 +74,7 @@ export default function CustomizationDialog({
                             </DialogDescription>
                         </DialogHeader>
                         <CustomizationPanel value={value} onChange={onChange} onSave={handleSave}
+                            defaultCustomization={defaultCustomization}
                             onReset={handleReset} />
                     </DialogContent>
                 </Dialog>

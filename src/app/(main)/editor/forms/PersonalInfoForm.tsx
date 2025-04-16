@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 export default function PersonalInfoForm({
     resumeData,
     setResumeData,
+    // setPdfBytes
 }: EditorFormProps) {
     const form = useForm<PersonalInfoValues>({
         resolver: zodResolver(personalInfoSchema),
@@ -42,6 +43,7 @@ export default function PersonalInfoForm({
             const isValid = await form.trigger();
             if (!isValid) return;
             setResumeData({ ...resumeData, ...values });
+            // setPdfBytes(null)
         });
         return unsubscribe;
     }, [form, resumeData, setResumeData]);
@@ -199,8 +201,8 @@ export default function PersonalInfoForm({
                                 <FormItem>
                                     <FormLabel>GitHub</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="Enter your github Link" readOnly tabIndex={-1}
-                                            className="bg-muted cursor-not-allowed text-muted-foreground pointer-events-none" />
+                                        <Input {...field} placeholder="Enter your github Link"
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -213,8 +215,7 @@ export default function PersonalInfoForm({
                                 <FormItem>
                                     <FormLabel>LinkedIn</FormLabel>
                                     <FormControl>
-                                        <Input {...field} placeholder="Enter your linkedin Link" readOnly tabIndex={-1}
-                                            className="bg-muted cursor-not-allowed text-muted-foreground pointer-events-none" />
+                                        <Input {...field} placeholder="Enter your linkedin Link" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

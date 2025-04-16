@@ -125,6 +125,7 @@ export default function PORForm({
                                 append({
                                     position: "",
                                     startDate: "",
+                                    organization: "",
                                     endDate: "",
                                     description: [],
                                 })

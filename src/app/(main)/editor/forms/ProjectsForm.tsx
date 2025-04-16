@@ -125,6 +125,7 @@ export default function ProjectsForm({
                                 append({
                                     title: "",
                                     link: "",
+                                    gitLink: "",
                                     startDate: "",
                                     endDate: "",
                                     description: [],
@@ -224,7 +225,20 @@ function ProjectItem({
                 name={`Projects.${index}.link`}
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Link</FormLabel>
+                        <FormLabel>Live Link</FormLabel>
+                        <FormControl>
+                            <Input {...field} value={field.value ?? ""} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name={`Projects.${index}.gitLink`}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Github Link</FormLabel>
                         <FormControl>
                             <Input {...field} value={field.value ?? ""} />
                         </FormControl>

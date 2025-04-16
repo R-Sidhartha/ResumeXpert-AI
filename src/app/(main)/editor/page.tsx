@@ -34,24 +34,49 @@ export default async function Page({ searchParams }: PageProps) {
     //     id: ''
     // };
 
-    const userData = await getUserData(userId); // ✅ Fetch user data
-    if (!userData) return null;
+    // const userData = await getUserData(userId); // ✅ Fetch user data
+    // if (!userData) return null;
 
 
-    const resumeToEdit = resumeId
-        ? await prisma.resume.findUnique({
-            where: { id: resumeId, userId },
-            include: resumeDataInclude,
-        })
-        : null;
+    // const resumeToEdit = resumeId
+    //     ? await prisma.resume.findUnique({
+    //         where: { id: resumeId, userId },
+    //         include: resumeDataInclude,
+    //     })
+    //     : null;
 
-    const templateData = templateId
-        ? await fetchResumeTemplate(templateId) || { template: "", name: "", id: "" }
-        : resumeToEdit?.resumeTemplate ?? { template: "", name: "", id: "" };
+    // Fetch user data & resume data & template in parallel
+    const [userData, resumeToEdit] = await Promise.all([
+        getUserData(userId),
+        resumeId
+            ? prisma.resume.findUnique({
+                where: { id: resumeId, userId },
+                include: resumeDataInclude,
+            })
+            : Promise.resolve(null),
+    ]);
 
-    const customizations = resumeId
-        ? await getCustomizations(resumeId)
-        : null;
+    // const templateData = templateId
+    //     ? await fetchResumeTemplate(templateId) || { template: "", name: "", id: "" }
+    //     : resumeToEdit?.resumeTemplate ?? { template: "", name: "", id: "" };
+
+    // const customizations = resumeId
+    //     ? await getCustomizations(resumeId)
+    //     : null;
+
+    // fetch customization & template in parallel
+    const [customizations, fetchedTemplate] = await Promise.all([
+        resumeId ? getCustomizations(resumeId) : Promise.resolve(null),
+        templateId ? fetchResumeTemplate(templateId) : Promise.resolve(null),
+    ]);
+
+    const templateData =
+        fetchedTemplate ??
+        resumeToEdit?.resumeTemplate ?? {
+            template: "",
+            name: "",
+            id: "",
+        };
 
     const customization = customizations
         ? {
@@ -62,6 +87,7 @@ export default async function Page({ searchParams }: PageProps) {
             sectionSpacing: customizations.sectionSpacing ?? undefined,
             itemSpacing: customizations.itemSpacing ?? undefined,
             color: customizations.color ?? undefined,
+            sectionOrder: customizations.sectionOrder ?? undefined,
             resumeId: customizations.resumeId ?? undefined,
         }
         : null;
@@ -72,10 +98,10 @@ export default async function Page({ searchParams }: PageProps) {
         templateData={templateData}
         customizations={customization ?? null}
         userData={{
-            firstName: userData.firstName || "",
-            lastName: userData.lastName || "",
-            github: userData.github || "",
-            linkedIn: userData.linkedIn || "",
+            firstName: userData?.firstName || "",
+            lastName: userData?.lastName || "",
+            github: userData?.github || "",
+            linkedIn: userData?.linkedIn || "",
         }}
     />;
 

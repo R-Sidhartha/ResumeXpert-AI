@@ -56,8 +56,9 @@ model Resume {
   twitter     String?
   portfolio   String?
 
-  pdfUrl String?
-  imgUrl String?
+  pdfUrl      String?
+  imgUrl      String?
+  pdfPublicId String?
 
   resumeTemplate   ResumeTemplate? @relation(fields: [resumeTemplateId], references: [id], onDelete: Cascade)
   resumeTemplateId String?
@@ -69,6 +70,7 @@ model Resume {
   projects                  Project[]
   positionsOfResponsibility PositionOfResponsibility[]
   skills                    Skill[]
+  customSections            CustomSection[]
   certifications            String[]                   @default([])
   achievements              String[]                   @default([])
   extraCurriculars          String[]                   @default([])
@@ -105,7 +107,9 @@ model Customization {
   lineSpacing    String?
   sectionSpacing String?
   itemSpacing    String?
+  wordSpacing    String?
   color          String?
+  sectionOrder   String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -117,6 +121,7 @@ model WorkExperience {
   id          String    @id @default(cuid())
   position    String?
   company     String?
+  location    String?
   startDate   DateTime?
   endDate     DateTime?
   description String[]  @default([])
@@ -133,6 +138,8 @@ model WorkExperience {
 model Education {
   id                     String    @id @default(cuid())
   degree                 String?
+  branch                 String?
+  score                  String?
   school                 String?
   startDate              DateTime?
   endDate                DateTime?
@@ -153,6 +160,7 @@ model Project {
   description String[]  @default([])
   // techStack   String[] // Array of technologies used in the project
   link        String? // Optional link to the project (e.g., GitHub repo or live demo)
+  gitLink     String?
   startDate   DateTime?
   endDate     DateTime?
 
@@ -194,4 +202,38 @@ model PositionOfResponsibility {
   updatedAt DateTime @updatedAt
 
   @@map("positions_of_responsibility")
+}
+
+model CustomSection {
+  id    String  @id @default(cuid())
+  title String? // e.g. "Volunteering", "Freelance Work"
+  order Int? // ordering index within resume
+
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  entries CustomSectionEntry[] // NEW RELATION
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("custom_sections")
+}
+
+model CustomSectionEntry {
+  id          String    @id @default(cuid())
+  heading     String?
+  subheading  String?
+  location    String?
+  startDate   DateTime?
+  endDate     DateTime?
+  description String[]  @default([]) // Bullet points
+
+  sectionId String
+  section   CustomSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("custom_section_entries")
 }
