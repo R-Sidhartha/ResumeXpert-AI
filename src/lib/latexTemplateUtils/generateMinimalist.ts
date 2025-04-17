@@ -4,6 +4,7 @@ import {
   formatYear,
   injectOrderedSections,
   getScoreLabel,
+  getSectionTitle,
 } from "../utils";
 import { ResumeValues } from "../validation";
 
@@ -35,10 +36,10 @@ export function generateMinimalist(
       resumeData.github || "https://github.com/johndoe",
     ),
     "<<SUMMARY>>": resumeData.summary?.length
-      ? `\\section{Summary} \\begin{onecolentry} ${highlightAndEscapeLatex(resumeData.summary)} \\end{onecolentry}`
+      ? `\\section{${getSectionTitle("summary", resumeData.customization)}} \\begin{onecolentry} ${highlightAndEscapeLatex(resumeData.summary)} \\end{onecolentry}`
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
-      ? ` \\section{Education}
+      ? ` \\section{${getSectionTitle("education", resumeData.customization)}}
       ${resumeData.educations
         ?.map(
           (edu) =>
@@ -48,7 +49,7 @@ export function generateMinimalist(
         `\\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : "",
     "<<SKILLS>>": resumeData.skills?.length
-      ? `\\section{Technical Skills}
+      ? `\\section{${getSectionTitle("skills", resumeData.customization)}}
 \\begin{onecolentry} ` +
         resumeData.skills
           .map(
@@ -59,7 +60,7 @@ export function generateMinimalist(
         ` \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
-      ? `\\section{Experience}
+      ? `\\section{${getSectionTitle("experience", resumeData.customization)}}
                 ${resumeData.workExperiences
                   ?.map(
                     (exp) =>
@@ -76,7 +77,7 @@ export function generateMinimalist(
                   .join(" ")}`
       : "",
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `\\section{Projects}
+      ? `\\section{${getSectionTitle("projects", resumeData.customization)}}
       ${resumeData.Projects?.map(
         (proj) =>
           `\\begin{twocolentry}{${proj.startDate ? `${formatDate(proj.startDate) || ""} - ${formatDate(proj.endDate) || "Present"}` : ``}} {\\textbf{${proj.title}} ${highlightAndEscapeLatex(proj.link) ? `$|$ \\href{${highlightAndEscapeLatex(proj.link)}}{link \\faExternalLink}}` : ""}} \\end{twocolentry}` +
@@ -88,7 +89,7 @@ export function generateMinimalist(
       ).join(" ")}`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `\\section{Positions of Responsibility}
+      ? `\\section{${getSectionTitle("por", resumeData.customization)}}
       ${resumeData.POR?.map(
         (por) =>
           `\\begin{twocolentry}{${formatDate(por.startDate)} - ${formatDate(por.endDate)}}  \\textbf{${highlightAndEscapeLatex(por.position)} $|$ ${highlightAndEscapeLatex(por.organization)}} \\end{twocolentry}` +
@@ -101,13 +102,13 @@ export function generateMinimalist(
       ).join(" ")}`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `\\section{Extra Curricular} \\begin{onecolentry} \\begin{highlights} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry}`
+      ? `\\section{${getSectionTitle("extracurriculars", resumeData.customization)}} \\begin{onecolentry} \\begin{highlights} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry}`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `\\section{Achievements} \\begin{onecolentry} \\begin{highlights} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("achievements", resumeData.customization)}} \\begin{onecolentry} \\begin{highlights} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `\\section{Certifications} \\begin{onecolentry} \\begin{highlights} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("certifications", resumeData.customization)}} \\begin{onecolentry} \\begin{highlights} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{highlights} \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CUSTOM_SECTIONS>>": resumeData.customSections?.length
       ? resumeData.customSections
@@ -156,6 +157,7 @@ export function generateMinimalist(
   };
 
   const sectionMap: Record<string, string> = {
+    SUMMARY: placeholders["<<SUMMARY>>"],
     EXPERIENCE: placeholders["<<EXPERIENCE>>"],
     EDUCATION: placeholders["<<EDUCATION>>"],
     PROJECTS: placeholders["<<PROJECTS>>"],

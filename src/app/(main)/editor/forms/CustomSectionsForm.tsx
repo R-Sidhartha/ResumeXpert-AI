@@ -88,7 +88,8 @@ export default function CustomSectionForm({ resumeData, setResumeData }: EditorF
         <div className="mx-auto max-w-xl space-y-6">
             <div className="space-y-1.5 text-center">
                 <h2 className="text-2xl font-semibold">Custom Sections</h2>
-                <p className="text-sm text-muted-foreground">Add custom sections like volunteering, certifications, etc.</p>
+                <p className="text-sm text-muted-foreground">Add custom sections like volunteering, publications, etc.</p>
+                <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>
             </div>
             <Form {...form}>
                 <form className="space-y-3">

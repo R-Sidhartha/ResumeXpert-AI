@@ -44,6 +44,7 @@ export default function ExtraCurricularForm({ resumeData, setResumeData }: Edito
             <div className="space-y-1.5 text-center">
                 <h2 className="text-2xl font-semibold">Extra Curriculars</h2>
                 <p className="text-sm text-muted-foreground">Highlight your extra-curricular activities</p>
+                <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>
             </div>
             <Form {...form}>
                 <form className="space-y-4">

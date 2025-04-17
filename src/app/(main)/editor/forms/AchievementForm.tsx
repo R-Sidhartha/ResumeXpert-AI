@@ -48,6 +48,7 @@ export default function AchievementsForm({ resumeData, setResumeData }: EditorFo
             <div className="space-y-1.5 text-center">
                 <h2 className="text-2xl font-semibold">Achievements</h2>
                 <p className="text-sm text-muted-foreground">List your key accomplishments. One per line.</p>
+                <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>
             </div>
             <Form {...form}>
                 <form className="space-y-4">

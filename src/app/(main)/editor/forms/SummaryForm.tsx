@@ -42,6 +42,7 @@ export default function SummaryForm({
                     Write a short introduction for your resume or let the AI generate one
                     from your entered data.
                 </p>
+                <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>
             </div>
             <Form {...form}>
                 <form className="space-y-3">

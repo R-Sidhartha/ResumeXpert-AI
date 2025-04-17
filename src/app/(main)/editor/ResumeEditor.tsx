@@ -33,6 +33,7 @@ import { generateMinimalist } from "@/lib/latexTemplateUtils/generateMinimalist"
 import { generateSlate } from "@/lib/latexTemplateUtils/generateSlate";
 import { generateImpactPro } from "@/lib/latexTemplateUtils/generateImpactPro";
 import { generateStacked } from "@/lib/latexTemplateUtils/generateStacked";
+// import SectionTitlesDialog from "@/components/SectionTitleForm";
 
 
 interface ResumeEditorProps {
@@ -68,9 +69,10 @@ export default function ResumeEditor(
 ) {
     const searchParams = useSearchParams();
 
+    const defaultCustomization = getCustomizationForTemplate(templateData.name);
     const [resumeData, setResumeData] = useState<ResumeValues>(
         resumeToEdit ? mapToResumeValues(resumeToEdit) : {
-            resumeTemplateId: templateData.id, customization: customizations, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn, customSections: [],
+            resumeTemplateId: templateData.id, customization: customizations ? customizations : defaultCustomization, firstName: userData.firstName, lastName: userData.lastName, github: userData.github, linkedIn: userData.linkedIn, customSections: [],
         }
     );
     const [showSmResumePreview, setShowSmResumePreview] = useState(false);
@@ -94,14 +96,14 @@ export default function ResumeEditor(
         window.history.pushState(null, "", `?${newSearchParams.toString()}`);
     }
 
-    const defaultCustomization = getCustomizationForTemplate(templateData.name);
 
     useEffect(() => {
         const generateLatex = templateGenerators[templateData.name] || (() => "");
-        setLatexCode(generateLatex(templateData.template, debouncedResumeData));
-        console.log(latexCode)
+        const newLatex = generateLatex(templateData.template, debouncedResumeData);
+        setLatexCode(newLatex);
+        console.log("Generated LaTeX:", newLatex);
         return () => { };
-    }, [latexCode, debouncedResumeData, templateData]);
+    }, [debouncedResumeData, templateData]);
 
     // Load PdfTeXEngine.js dynamically
     useEffect(() => {
@@ -189,7 +191,7 @@ export default function ResumeEditor(
     // )?.component;
 
     const templateFieldMap: Record<string, string[]> = {
-        "sleek": ["general-info", "resume-upload", "personal-info", "work-experience", "education", "certifications", "projects", "skills", "position-of-responsibilities", "extra-curricular", "customSection"],
+        "sleek": ["general-info", "resume-upload", "personal-info", "work-experience", "education", "certifications", "projects", "skills", "position-of-responsibilities", "extra-curricular", "customSection", "summary"],
         "professional": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "extra-curricular", "customSection"],
         "breeze": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],
         "minimalist": ["general-info", "resume-upload", "personal-info", "work-experience", "projects", "education", "skills", "position-of-responsibilities", "certifications", "achievements", "extra-curricular", "customSection"],

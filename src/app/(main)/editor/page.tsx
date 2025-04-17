@@ -88,6 +88,9 @@ export default async function Page({ searchParams }: PageProps) {
             itemSpacing: customizations.itemSpacing ?? undefined,
             color: customizations.color ?? undefined,
             sectionOrder: customizations.sectionOrder ?? undefined,
+            sectionTitles: typeof customizations.sectionTitles === "object" && customizations.sectionTitles !== null
+                ? customizations.sectionTitles as Record<string, string>
+                : undefined,
             resumeId: customizations.resumeId ?? undefined,
         }
         : null;

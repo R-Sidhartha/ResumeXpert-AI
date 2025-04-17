@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ResumeServerData } from "./types";
-import { ResumeValues } from "./validation";
+import { CustomizationValues, ResumeValues } from "./validation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -156,6 +156,11 @@ export function mapToResumeValues(data: ResumeServerData): ResumeValues {
           color: data.customization.color ?? undefined,
           wordSpacing: data.customization.wordSpacing ?? undefined,
           sectionOrder: data.customization.sectionOrder ?? undefined,
+          sectionTitles:
+            typeof data.customization.sectionTitles === "object" &&
+            data.customization.sectionTitles !== null
+              ? (data.customization.sectionTitles as Record<string, string>)
+              : undefined,
         }
       : undefined,
     workExperiences: data.workExperiences.map((exp) => ({
@@ -251,4 +256,37 @@ export function injectOrderedSections({
     .join("\n\n");
 
   return template.replace("<<DYNAMIC_SECTIONS>>", orderedSections);
+}
+
+export function getSectionTitle(
+  key: string,
+  customization?: CustomizationValues | null,
+): string {
+  const normalizedKey = key.trim().toLowerCase();
+
+  const defaultTitles: Record<string, string> = {
+    education: "Education",
+    experience: "Experience",
+    projects: "Projects",
+    certifications: "Certifications",
+    por: "Positions of Responsibility",
+    skills: "Technical Skills",
+    achievements: "Achievements",
+    extracurriculars: "Extra Curricular",
+    customsections: "Custom Sections",
+    summary: "Summary",
+  };
+
+  console.log("customization", customization);
+  console.log("customization SectionTitles", customization?.sectionTitles);
+
+  const customTitle =
+    customization?.sectionTitles &&
+    Object.entries(customization.sectionTitles).find(
+      ([k]) => k.trim().toLowerCase() === normalizedKey,
+    )?.[1];
+
+  return highlightAndEscapeLatex(
+    customTitle ?? defaultTitles[normalizedKey] ?? "",
+  );
 }

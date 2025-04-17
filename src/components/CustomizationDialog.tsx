@@ -13,8 +13,10 @@ import { Sparkles } from "lucide-react";
 import CustomizationPanel from "./CustomizationPanel";
 import { CustomizationValues } from "@/lib/validation";
 import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 // import { DEFAULT_CUSTOMIZATIONS } from "@/lib/utils";
 import usePremiumModal from "@/hooks/usePremiumModal";
+import { SectionTitleForm } from "./SectionTitleForm";
 
 
 type Props = {
@@ -40,9 +42,9 @@ export default function CustomizationDialog({
         setOpen(false);        // close the dialog
     };
 
-    const handleReset = () => {
-        onChange(defaultCustomization); // reset to default
-    };
+    // const handleReset = () => {
+    //     onChange(defaultCustomization); // reset to default
+    // };
 
     const handleOpen = () => {
         if (canCustomize) {
@@ -64,18 +66,41 @@ export default function CustomizationDialog({
             </Button>
             {canCustomize && (
                 <Dialog open={open} onOpenChange={setOpen}>
-                    {/* <DialogTrigger asChild>
-            </DialogTrigger> */}
-                    <DialogContent className="max-w-3xl sm:max-w-2xl rounded-2xl shadow-lg border max-h-[90vh] overflow-y-auto">
-                        <DialogHeader>
+                    <DialogContent className="max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-2xl p-0">
+                        <DialogHeader className="px-6 pt-6">
                             <DialogTitle className="text-xl font-bold">Customize Resume Style</DialogTitle>
                             <DialogDescription>
-                                Adjust spacing, colors, margins, and visual preferences for your resume.
+                                Adjust layout, spacing, colors, and section titles.
                             </DialogDescription>
                         </DialogHeader>
-                        <CustomizationPanel value={value} onChange={onChange} onSave={handleSave}
-                            defaultCustomization={defaultCustomization}
-                            onReset={handleReset} />
+                        <div className="px-6 pb-6">
+                            <Tabs defaultValue="style" className="w-full">
+                                <TabsList className="mb-4 w-fit justify-start">
+                                    <TabsTrigger value="style">Design & Layout</TabsTrigger>
+                                    <TabsTrigger value="sections">Section Titles</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="style">
+                                    <CustomizationPanel
+                                        value={value}
+                                        onChange={onChange}
+                                        onSave={handleSave}
+                                        defaultCustomization={defaultCustomization}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="sections">
+                                    <SectionTitleForm
+                                        initialTitles={value.sectionTitles}
+                                        onChange={(newTitles) =>
+                                            onChange({
+                                                ...value,
+                                                sectionTitles: newTitles,
+                                            })
+                                        }
+                                        onDone={handleSave}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </div>
                     </DialogContent>
                 </Dialog>
             )}

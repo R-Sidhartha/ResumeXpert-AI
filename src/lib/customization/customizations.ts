@@ -20,6 +20,16 @@ export const SLEEK_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 
 export const PROFESSIONAL_CUSTOMIZATION: CustomizationValues = {
@@ -42,6 +52,16 @@ export const PROFESSIONAL_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 
 export const BREEZE_CUSTOMIZATION: CustomizationValues = {
@@ -64,6 +84,16 @@ export const BREEZE_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 export const MINIMALIST_CUSTOMIZATION: CustomizationValues = {
   bulletIcon: "\\tiny$\\bullet$",
@@ -85,6 +115,16 @@ export const MINIMALIST_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 
 export const SLATE_CUSTOMIZATION: CustomizationValues = {
@@ -107,6 +147,16 @@ export const SLATE_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 export const IMPACTPRO_CUSTOMIZATION: CustomizationValues = {
   bulletIcon: "\\textbullet",
@@ -128,6 +178,16 @@ export const IMPACTPRO_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };
 export const STACKED_CUSTOMIZATION: CustomizationValues = {
   bulletIcon: "$\\circ$",
@@ -149,4 +209,14 @@ export const STACKED_CUSTOMIZATION: CustomizationValues = {
     "extracurriculars",
     "customsections",
   ],
+  sectionTitles: {
+    education: "Education",
+    achievements: "Achievements",
+    experience: "Experience",
+    projects: "Projects",
+    skills: "Skills",
+    por: "Positions of Responsibility",
+    certifications: "Certifications",
+    extracurriculars: "Extra Curriculars",
+  },
 };

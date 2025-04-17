@@ -61,6 +61,8 @@ export default function SkillsForm({
                 <p className="text-sm text-muted-foreground">
                     Organize your skills into categories (e.g., Technical Skills, Soft Skills).
                 </p>
+                {resumeData.skills &&
+                    <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>}
             </div>
             <Form {...form}>
                 <form className="space-y-4">

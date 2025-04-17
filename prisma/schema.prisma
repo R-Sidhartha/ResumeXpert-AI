@@ -110,6 +110,7 @@ model Customization {
   wordSpacing    String?
   color          String?
   sectionOrder   String[] @default([])
+  sectionTitles  Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

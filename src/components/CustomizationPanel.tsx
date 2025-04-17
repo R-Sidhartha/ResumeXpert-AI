@@ -15,7 +15,7 @@ type Props = {
     value: CustomizationValues;
     onChange: (newValue: CustomizationValues) => void;
     onSave?: () => void;
-    onReset?: () => void;
+    // onReset?: () => void;
     defaultCustomization: CustomizationValues
 };
 
@@ -29,7 +29,8 @@ const bulletOptions = [
 ];
 
 export default function CustomizationPanel({ value, onChange, onSave,
-    onReset, defaultCustomization }: Props) {
+    // onReset,
+    defaultCustomization }: Props) {
     const handleChange = (key: keyof CustomizationValues, val: string) => {
         onChange({ ...value, [key]: val });
     };
@@ -37,7 +38,7 @@ export default function CustomizationPanel({ value, onChange, onSave,
 
     const handleReset = () => {
         onChange(defaultCustomization);
-        onReset?.();
+        // onReset?.();
     };
 
     const handleSave = () => {
@@ -166,11 +167,11 @@ export default function CustomizationPanel({ value, onChange, onSave,
                         </p>
                     </div>
                 </div>
-                <h3 className="text-md font-medium text-zinc-700 dark:text-white mt-6 mb-2">
+                <h3 className="text-md font-medium text-zinc-700 dark:text-white mt-10 mb-2">
                     Section Order
                 </h3>
                 {/* {plan === "gold" || plan === "diamond" ? ( */}
-                <div className="my-6">
+                <div className="mt-2 mb-3">
                     <SectionReorder
                         onChange={(newOrder) => onChange({ ...value, sectionOrder: newOrder })}
                         defaultValue={value.sectionOrder || undefined}

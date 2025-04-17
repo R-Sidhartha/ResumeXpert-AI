@@ -4,6 +4,7 @@ import {
   formatYear,
   injectOrderedSections,
   getScoreLabel,
+  getSectionTitle,
 } from "../utils";
 import { ResumeValues } from "../validation";
 
@@ -35,12 +36,12 @@ export function generateSleek(
       resumeData.github || "https://github.com/johndoe",
     ),
     "<<SUMMARY>>": resumeData.summary
-      ? ` \\section{Summary} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
+      ? ` \\section{${getSectionTitle("summary", resumeData.customization)}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
   `
       : ``,
     "<<EDUCATION>>":
       resumeData.educations && resumeData.educations.length > 0
-        ? `\\section{Education}
+        ? `\\section{${getSectionTitle("education", resumeData.customization)}}
        ${resumeData.educations
          .map(
            (edu) =>
@@ -53,7 +54,7 @@ export function generateSleek(
         : "",
     "<<SKILLS>>":
       resumeData.skills && resumeData.skills?.length
-        ? `\\section{Technical Skills} \\begin{itemize} ` +
+        ? `\\section{${getSectionTitle("skills", resumeData.customization)}} \\begin{itemize} ` +
           resumeData.skills
             .map(
               (skillGroup) =>
@@ -63,7 +64,7 @@ export function generateSleek(
           ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
         : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
-      ? `\\section{Experience}
+      ? `\\section{${getSectionTitle("experience", resumeData.customization)}}
                 ${resumeData.workExperiences
                   ?.map(
                     (exp) =>
@@ -80,7 +81,7 @@ export function generateSleek(
                   .join(" ")}`
       : "",
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `\\section{Projects}
+      ? `\\section{${getSectionTitle("projects", resumeData.customization)}}
       ${resumeData.Projects?.map(
         (proj) =>
           `\\subsection{${highlightAndEscapeLatex(proj.title)}${proj.link ? ` $|$ \\href{${highlightAndEscapeLatex(proj.link)}}{\\small\\faGlobe}` : ""}}` +
@@ -92,7 +93,7 @@ export function generateSleek(
       ).join(" ")}`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `\\section{Positions of Responsibility}
+      ? `\\section{${getSectionTitle("por", resumeData.customization)}}
       ${resumeData.POR?.map(
         (por) =>
           `\\subsection{${highlightAndEscapeLatex(por.position)} $|$ ${highlightAndEscapeLatex(por.organization)} \\hfill ${formatDate(por.startDate)} - ${formatDate(por.endDate) || "Present"}}` +
@@ -105,13 +106,13 @@ export function generateSleek(
       ).join(" ")}`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `\\section{Extra Curricular} \\begin{itemize} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize}`
+      ? `\\section{${getSectionTitle("extracurriculars", resumeData.customization)}} \\begin{itemize} ${resumeData.extraCurriculars.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize}`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `\\section{Achievements} \\begin{itemize} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("achievements", resumeData.customization)}} \\begin{itemize} ${resumeData.achievements.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `\\section{Certifications} \\begin{itemize} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("certifications", resumeData.customization)}} \\begin{itemize} ${resumeData.certifications.map((activity) => `\\item ${highlightAndEscapeLatex(activity)}`).join(" ")} \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CUSTOM_SECTIONS>>": resumeData.customSections?.length
       ? resumeData.customSections
@@ -148,6 +149,7 @@ export function generateSleek(
   };
 
   const sectionMap: Record<string, string> = {
+    SUMMARY: placeholders["<<SUMMARY>>"],
     EXPERIENCE: placeholders["<<EXPERIENCE>>"],
     EDUCATION: placeholders["<<EDUCATION>>"],
     PROJECTS: placeholders["<<PROJECTS>>"],

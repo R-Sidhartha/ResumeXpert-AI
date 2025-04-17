@@ -95,6 +95,7 @@ export default function WorkExperienceForm({
                 <p className="text-sm text-muted-foreground">
                     Add as many work experiences as you like.
                 </p>
+                <h3 className="text-center text-xs text-yellow-600"> Wrap any word in {`{curly braces}`} to highlight it in your resume.</h3>
             </div>
             <Form {...form}>
                 <form className="space-y-3">

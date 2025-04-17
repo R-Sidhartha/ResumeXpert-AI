@@ -159,6 +159,7 @@ export const customizationSchema = z.object({
   itemSpacing: optionalString,
   wordSpacing: optionalString,
   sectionOrder: z.array(z.string().trim()).optional(),
+  sectionTitles: z.record(z.string(), z.string().trim()).optional(),
 });
 
 export type CustomizationValues = z.infer<typeof customizationSchema>;

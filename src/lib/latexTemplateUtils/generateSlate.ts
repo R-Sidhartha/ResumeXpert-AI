@@ -4,6 +4,7 @@ import {
   formatYear,
   injectOrderedSections,
   getScoreLabel,
+  getSectionTitle,
 } from "../utils";
 import { ResumeValues } from "../validation";
 
@@ -35,10 +36,10 @@ export function generateSlate(
       resumeData.github || "https://github.com/johndoe",
     ),
     "<<SUMMARY>>": resumeData.summary?.length
-      ? `\\section{Summary} \\small {${resumeData.summary}} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("summary", resumeData.customization)}} \\small {${resumeData.summary}} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
-      ? ` \\section{Education} \\resumeHeadingListStart{}
+      ? ` \\section{${getSectionTitle("education", resumeData.customization)}} \\resumeHeadingListStart{}
       ${resumeData.educations
         ?.map(
           (edu) =>
@@ -48,7 +49,7 @@ export function generateSlate(
         `\\resumeHeadingListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : "",
     "<<SKILLS>>": resumeData.skills?.length
-      ? `\\section{Technical Skills}
+      ? `\\section{${getSectionTitle("skills", resumeData.customization)}}
 \\resumeHeadingListStart{} ` +
         resumeData.skills
           .map(
@@ -59,7 +60,7 @@ export function generateSlate(
         ` \\resumeHeadingListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
-      ? `\\section{Experience}
+      ? `\\section{${getSectionTitle("experience", resumeData.customization)}}
 \\resumeHeadingListStart{}
 ${resumeData.workExperiences
   .map(
@@ -81,7 +82,7 @@ ${
       : "",
 
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `\\section{Projects}
+      ? `\\section{${getSectionTitle("projects", resumeData.customization)}}
 \\resumeHeadingListStart{}
 ${resumeData.Projects.map((proj) => {
   const link = proj.link?.trim()
@@ -103,7 +104,7 @@ ${
 \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `\\section{Positions of Responsibility}
+      ? `\\section{${getSectionTitle("por", resumeData.customization)}}
 \\resumeHeadingListStart{}
 ${resumeData.POR.map((por) => {
   const dateRange = `${formatDate(por.startDate)} - ${formatDate(por.endDate)}`;
@@ -123,13 +124,13 @@ ${
       : "",
 
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `\\section{Extra Curricular} \\resumeItemListStart{} ${resumeData.extraCurriculars.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{}   \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("extracurriculars", resumeData.customization)}} \\resumeItemListStart{} ${resumeData.extraCurriculars.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{}   \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `\\section{Achievements} \\resumeItemListStart{} ${resumeData.achievements.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("achievements", resumeData.customization)}} \\resumeItemListStart{} ${resumeData.achievements.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `\\section{Certifications} \\resumeItemListStart{} ${resumeData.certifications.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+      ? `\\section{${getSectionTitle("certifications", resumeData.customization)}} \\resumeItemListStart{} ${resumeData.certifications.map((activity) => `\\resumeItem {${highlightAndEscapeLatex(activity)}}`).join(" ")} \\resumeItemListEnd{} \\vspace{-15pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<CUSTOM_SECTIONS>>": resumeData.customSections?.length
       ? resumeData.customSections
@@ -185,6 +186,7 @@ ${
   };
 
   const sectionMap: Record<string, string> = {
+    SUMMARY: placeholders["<<SUMMARY>>"],
     EXPERIENCE: placeholders["<<EXPERIENCE>>"],
     EDUCATION: placeholders["<<EDUCATION>>"],
     PROJECTS: placeholders["<<PROJECTS>>"],

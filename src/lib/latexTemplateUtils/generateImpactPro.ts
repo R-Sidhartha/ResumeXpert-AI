@@ -3,6 +3,7 @@ import {
   formatDate,
   formatYear,
   injectOrderedSections,
+  getSectionTitle,
 } from "../utils";
 import { ResumeValues } from "../validation";
 
@@ -48,12 +49,12 @@ export function generateImpactPro(
     "<<SCHOOL>>":
       highlightAndEscapeLatex(highestQualification?.school) || "XYZ University",
     "<<SUMMARY>>": resumeData.summary
-      ? ` {\\large \\textbf{\\begin{tcolorbox}\\textsc{Professional Summary}\\end{tcolorbox}}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}
+      ? ` {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("summary", resumeData.customization)}}\\end{tcolorbox}}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}
   `
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
       ? `
-      {\\large \\textbf{\\begin{tcolorbox}\\textsc{Academic Qualifications}\\end{tcolorbox}}}
+      {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("education", resumeData.customization)}}\\end{tcolorbox}}}
       \\begin{center}
       \\begin{tabular}{|p{2.5cm}|p{6.0cm}|p{8.0cm}${hasScoreColumn ? "|p{1.8cm}" : ""}|}
       \\hline
@@ -75,7 +76,7 @@ export function generateImpactPro(
       : "",
 
     "<<SKILLS>>": resumeData.skills?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Technical Skills}\\end{tcolorbox}}} \\begin{itemize} ${resumeData.skills
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("skills", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize} ${resumeData.skills
           .map(
             (skillGroup) =>
               `\\item \\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
@@ -85,7 +86,7 @@ export function generateImpactPro(
           )} \\end{itemize} \\medskip \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
       : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Work Experience}\\end{tcolorbox}}} \\begin{itemize}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("experience", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
                   ${resumeData.workExperiences
                     ?.map(
                       (exp) =>
@@ -107,7 +108,7 @@ export function generateImpactPro(
                     \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
       : "",
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Key Projects}\\end{tcolorbox}}} \\begin{itemize}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("projects", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
       ${resumeData.Projects?.map(
         (proj) =>
           `
@@ -124,7 +125,7 @@ export function generateImpactPro(
       \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Positions of Responsibility}\\end{tcolorbox}}} \\begin{itemize}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("por", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
       ${resumeData.POR?.map(
         (por) =>
           `
@@ -141,20 +142,20 @@ export function generateImpactPro(
       \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Extra-Curricular Activities}\\end{tcolorbox}}}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("extracurriculars", resumeData.customization)}}\\end{tcolorbox}}}
          \\begin{itemize}
             ${resumeData.extraCurriculars.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize}`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Achievements}\\end{tcolorbox}}}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("achievements", resumeData.customization)}}\\end{tcolorbox}}}
          \\begin{itemize}
         ${resumeData.achievements.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
       : "",
 
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{Courses/Certifications}\\end{tcolorbox}}}
+      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("certifications", resumeData.customization)}}\\end{tcolorbox}}}
      \\begin{center}
      \\begin{tabular}{|p{9.8cm}|p{9.8cm}|}
      \\hline
@@ -227,6 +228,7 @@ export function generateImpactPro(
   };
 
   const sectionMap: Record<string, string> = {
+    SUMMARY: placeholders["<<SUMMARY>>"],
     EXPERIENCE: placeholders["<<EXPERIENCE>>"],
     EDUCATION: placeholders["<<EDUCATION>>"],
     PROJECTS: placeholders["<<PROJECTS>>"],

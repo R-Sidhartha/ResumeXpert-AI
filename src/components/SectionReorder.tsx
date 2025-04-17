@@ -99,7 +99,7 @@ export function SectionReorder({
     };
 
     return (
-        <div className="w-full max-w-md mx-auto">
+        <div className="w-full max-w-lg">
             <h3 className="text-sm font-semibold mb-3 text-zinc-700 dark:text-white">
                 Reorder Resume Sections
             </h3>

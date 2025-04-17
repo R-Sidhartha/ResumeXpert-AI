@@ -3,6 +3,7 @@ import {
   formatDate,
   injectOrderedSections,
   getScoreLabel,
+  getSectionTitle,
 } from "../utils";
 import { ResumeValues } from "../validation";
 
@@ -34,11 +35,11 @@ export function generateBreeze(
       resumeData.github || "https://github.com/johndoe",
     ),
     "<<SUMMARY>>": resumeData.summary
-      ? ` \\section*{Summary} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
+      ? ` \\section*{${getSectionTitle("summary", resumeData.customization)}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
   `
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
-      ? `\\section*{Education}
+      ? `\\section*{${getSectionTitle("education", resumeData.customization)}}
         \\resumeSubHeadingListStart
         ${resumeData.educations
           .map(
@@ -50,7 +51,7 @@ export function generateBreeze(
         \\resumeSubHeadingListEnd`
       : "",
     "<<SKILLS>>": resumeData.skills?.length
-      ? `\\section*{Skills}
+      ? `\\section*{${getSectionTitle("skills", resumeData.customization)}}
         \\resumeSubHeadingListStart
         ${resumeData.skills
           .map(
@@ -62,7 +63,7 @@ export function generateBreeze(
       : ``,
 
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
-      ? `\\section*{Experience}
+      ? `\\section*{${getSectionTitle("experience", resumeData.customization)}}
             \\resumeSubHeadingListStart
             ${resumeData.workExperiences
               .map((exp) => {
@@ -85,7 +86,7 @@ export function generateBreeze(
       : "",
 
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `\\section*{\\textbf{Projects}}
+      ? `\\section*{\\textbf{${getSectionTitle("projects", resumeData.customization)}}}
         \\resumeSubHeadingListStart
         ${resumeData.Projects.map((proj) => {
           const bullets =
@@ -104,7 +105,7 @@ export function generateBreeze(
         \\resumeSubHeadingListEnd`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `\\section*{Positions of Responsibility}
+      ? `\\section*{${getSectionTitle("por", resumeData.customization)}}
             \\resumeSubHeadingListStart
         ${resumeData.POR.map((pos) => {
           const bullets =
@@ -123,20 +124,20 @@ export function generateBreeze(
         \\resumeSubHeadingListEnd`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `\\section*{Extra-Curricular Activities}
+      ? `\\section*{${getSectionTitle("extracurriculars", resumeData.customization)}}
         \\begin{itemize}
             ${resumeData.extraCurriculars.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize}`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `\\section*{Achievements}
+      ? `\\section*{${getSectionTitle("achievements", resumeData.customization)}}
         \\begin{itemize}
         ${resumeData.achievements.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize}`
       : "",
 
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `\\section*{Certifications}
+      ? `\\section*{${getSectionTitle("certifications", resumeData.customization)}}
         \\begin{itemize}
         ${resumeData.certifications.map((cert) => `  \\item ${highlightAndEscapeLatex(cert)}`).join("\n")}
         \\end{itemize}`
@@ -213,6 +214,7 @@ ${bullets}
   };
 
   const sectionMap: Record<string, string> = {
+    SUMMARY: placeholders["<<SUMMARY>>"],
     EXPERIENCE: placeholders["<<EXPERIENCE>>"],
     EDUCATION: placeholders["<<EDUCATION>>"],
     PROJECTS: placeholders["<<PROJECTS>>"],
