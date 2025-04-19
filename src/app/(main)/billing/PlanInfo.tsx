@@ -1,9 +1,9 @@
 "use client";
 
-import { getPlanDetails } from "@/app/(main)/subscriptions/action";
 import { useEffect, useState } from "react";
 import { BadgeCheck, Clock, Calendar, XCircle, AlertTriangle, Zap, ShieldCheck } from "lucide-react";
 import CancelSubButton from "./CancelSubButton";
+import { getPlanDetails } from "./action";
 
 type Plan = "free" | "pro" | "elite";
 

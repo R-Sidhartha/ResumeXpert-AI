@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import Script from "next/script";
-import { createSubscription } from "@/app/(main)/subscriptions/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Confetti from "react-confetti";
+import { createSubscription } from "./action";
 
 export function SubscriptionButton({ planType }: { planType: "pro" | "elite" }) {
     const [loading, setLoading] = useState(false);
