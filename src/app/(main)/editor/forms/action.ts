@@ -1,6 +1,7 @@
 "use server";
 
 import openai from "@/lib/openai";
+import { getCurrentUserSubscriptionLevel } from "@/lib/userSubscriptionPlan";
 import {
   GeneratePORInput,
   generatePORSchema,
@@ -23,6 +24,13 @@ import { toast } from "sonner";
 export async function generateSummary(input: GenerateSummaryInput) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+  if (subscriptionLevel === "free") {
+    throw new Error(
+      "AI tools are available only for Pro or Elite plans. Please upgrade your plan to use them.",
+    );
+  }
 
   const {
     jobTitle,
@@ -124,6 +132,15 @@ export async function generateWorkExperience(
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+
+  // Check if the user is allowed to use AI tools
+  if (subscriptionLevel === "free") {
+    throw new Error(
+      "AI tools are available only for Pro or Elite plans. Please upgrade your plan to use them.",
+    );
+  }
+
   const { description } = generateWorkExperienceSchema.parse(input);
 
   console.log("inside generateWorkExperience function", description);
@@ -204,32 +221,20 @@ Guidelines for generating the bullet points in "description":
       description,
     } satisfies WorkExperience;
   }
-
-  //   const position = aiResponse.match(/Job title:\s*(.*)/i)?.[1] || "";
-  //   const company = aiResponse.match(/Company:\s*(.*)/i)?.[1] || "";
-  //   const startDate = aiResponse.match(/Start date:\s*(\d{4}-\d{2}-\d{2})/)?.[1];
-  //   const endDate = aiResponse.match(/End date:\s*(\d{4}-\d{2}-\d{2})/)?.[1];
-
-  //   const rawDescription =
-  //     aiResponse.match(/Description:\s*([\s\S]*)/i)?.[1]?.trim() || "";
-
-  //   const descriptionArray = rawDescription
-  //     .split(/\n|•|-|\*/g)
-  //     .map((line) => line.trim())
-  //     .filter((line) => line.length > 0);
-
-  //   return {
-  //     position,
-  //     company,
-  //     startDate,
-  //     endDate,
-  //     description: descriptionArray,
-  //   } satisfies WorkExperience;
 }
 
 export async function generateProject(input: GenerateProjectsInput) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+
+  // Check if the user is allowed to use AI tools
+  if (subscriptionLevel === "free") {
+    throw new Error(
+      "AI tools are available only for Pro or Elite plans. Please upgrade your plan to use them.",
+    );
+  }
 
   const { description } = generateProjectsSchema.parse(input);
 
@@ -298,6 +303,15 @@ export async function generatePOR(input: GeneratePORInput) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+
+  // Check if the user is allowed to use AI tools
+  if (subscriptionLevel === "free") {
+    throw new Error(
+      "AI tools are available only for Pro or Elite plans. Please upgrade your plan to use them.",
+    );
+  }
+
   const { description } = generatePORSchema.parse(input);
 
   // const subscriptionLevel = await getUserSubscriptionLevel(userId);
@@ -363,6 +377,15 @@ export async function generatePOR(input: GeneratePORInput) {
 export async function generateFormattedResume(input: GenerateResumeDataInput) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+
+  // Check if the user is allowed to use AI tools
+  if (subscriptionLevel === "free") {
+    throw new Error(
+      "AI tools are available only for Pro or Elite plans. Please upgrade your plan to use them.",
+    );
+  }
 
   const { extractedText } = generateResumeDataSchema.parse(input);
 

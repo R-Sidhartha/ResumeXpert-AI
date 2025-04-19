@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
-import featureImage from "@/assets/img3.png";
-import featureImage2 from "@/assets/img4.png";
+import featureImage from "@/assets/SS1.png";
+import featureImage2 from "@/assets/SS2.png";
 
 const features = [
     {

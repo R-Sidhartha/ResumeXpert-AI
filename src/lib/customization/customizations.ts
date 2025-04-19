@@ -70,7 +70,7 @@ export const BREEZE_CUSTOMIZATION: CustomizationValues = {
   margin: "0.5in",
   lineSpacing: "1.25",
   sectionSpacing: "0pt",
-  itemSpacing: "2pt",
+  itemSpacing: "-2pt",
   fontSize: "10pt",
   wordSpacing: "3pt",
   sectionOrder: [
@@ -101,7 +101,7 @@ export const MINIMALIST_CUSTOMIZATION: CustomizationValues = {
   margin: "0.4in",
   lineSpacing: "1.25",
   sectionSpacing: "0pt",
-  itemSpacing: "2pt",
+  itemSpacing: "0pt",
   fontSize: "10pt",
   wordSpacing: "3pt",
   sectionOrder: [
@@ -191,7 +191,7 @@ export const IMPACTPRO_CUSTOMIZATION: CustomizationValues = {
 };
 export const STACKED_CUSTOMIZATION: CustomizationValues = {
   bulletIcon: "$\\circ$",
-  color: "20,105,170",
+  color: "0.25, 0.5, 0.75",
   margin: "0.7in",
   lineSpacing: "1.1",
   sectionSpacing: "0pt",

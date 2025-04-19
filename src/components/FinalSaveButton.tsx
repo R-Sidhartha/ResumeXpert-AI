@@ -13,18 +13,18 @@ type Props = {
 };
 
 export default function FinalSaveButton({ pdfBytes, handleSave }: Props) {
-    const [loading, setLoading] = useState(false);
+    const [saveloading, setSaveLoading] = useState(false);
     const router = useRouter();
 
     console.log("pdfBytes", pdfBytes)
 
     const handleFinalSave = async () => {
         if (!pdfBytes || pdfBytes.length === 0) {
-            toast.warning("Please preview the resume before saving.");
+            toast.warning("Please preview the latest changes, before saving.");
             return;
         }
 
-        setLoading(true);
+        setSaveLoading(true);
         try {
             // Ensure data is saved before finalizing
             const resumeId = await handleSave();
@@ -45,7 +45,7 @@ export default function FinalSaveButton({ pdfBytes, handleSave }: Props) {
             console.error(err);
             toast.error("Error during final save.");
         } finally {
-            setLoading(false);
+            setSaveLoading(false);
         }
     };
 
@@ -53,10 +53,10 @@ export default function FinalSaveButton({ pdfBytes, handleSave }: Props) {
         <Button
             onClick={handleFinalSave}
             variant="default"
-            disabled={loading}
+            disabled={saveloading}
             className="px-4 py-2 bg-green-600 text-white shadow hover:bg-green-700 transition-all"
         >
-            {loading ? "Saving..." : "Save"}
+            {saveloading ? "Saving..." : "Save"}
         </Button>
     );
 }

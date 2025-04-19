@@ -76,7 +76,7 @@ export default function Footer({
                         pdfBytes={pdfBytes || new Uint8Array()}
                     />
                     {/* <Button variant="secondary" asChild>
-                        <Link href="/resumes">Close</Link>
+                        <Link href="/resume-temlates">Close</Link>
                     </Button> */}
                 </div>
             </div>

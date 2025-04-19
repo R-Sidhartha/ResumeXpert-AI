@@ -3,17 +3,25 @@ import React from 'react';
 import ResumeItem from '../ResumeItem';
 import { getResumeTemplates } from './action';
 import { cn } from '@/lib/utils'; // optional if you use class merging helper
+import { getUserResumes } from '../my-resumes/action';
 
 export const metadata: Metadata = {
     title: 'Resume Templates',
 };
 
+
 const Page = async () => {
     const templates = await getResumeTemplates();
+    const userResumes = await getUserResumes();
+    if (!userResumes) {
+        console.error('No resumes found for user');
+    }
+    const userResumeCount = userResumes?.count || 0;
 
     const freeTemplates = templates.filter((t) => t.subscriptionLevel === 'free');
     const proTemplates = templates.filter((t) => t.subscriptionLevel === 'pro');
     const eliteTemplates = templates.filter((t) => t.subscriptionLevel === 'elite');
+
 
     const TierSection = ({
         title,
@@ -68,7 +76,7 @@ const Page = async () => {
                     >
                         <div className="w-full">
                             {/* Make preview large and prominent */}
-                            <ResumeItem template={template} context="templates" />
+                            <ResumeItem template={template} context="templates" userResumeCount={userResumeCount} />
                         </div>
                     </div>
                 ))}
@@ -80,7 +88,7 @@ const Page = async () => {
         <main className="max-w-7xl mx-auto w-full px-6 mt-12 mb-24 flex flex-col gap-12">
             {/* HEADER */}
             <header className="">
-                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-800 text-center">
+                <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-800 text-center dark:text-zinc-300">
                     Professional Resume Templates That Get You Hired
                 </h1>
                 <p className="mt-2 text-base sm:text-lg text-gray-600 dark:text-zinc-400 text-center ">
@@ -108,14 +116,16 @@ const Page = async () => {
             />
 
             {/* ELITE SECTION */}
-            <TierSection
-                title="Elite"
-                description="Modern, bold, and sophisticated templates built to turn heads."
-                templates={eliteTemplates}
-                badgeColor="rose"
-                gradient="bg-gradient-to-r from-rose-400 to-pink-500"
-            // glass
-            />
+            {eliteTemplates.length > 0 &&
+                <TierSection
+                    title="Elite"
+                    description="Modern, bold, and sophisticated templates built to turn heads."
+                    templates={eliteTemplates}
+                    badgeColor="rose"
+                    gradient="bg-gradient-to-r from-rose-400 to-pink-500"
+                // glass
+                />
+            }
         </main>
     );
 };

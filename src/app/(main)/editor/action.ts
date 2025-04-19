@@ -1,5 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserSubscriptionLevel } from "@/lib/userSubscriptionPlan";
 
 //end point to retrieve resume templates
 export const fetchResumeTemplate = async (templateId: string) => {
@@ -122,16 +123,57 @@ export async function saveResume(values: ResumeValues) {
     extraCurriculars,
     certifications,
     customSections,
-    // customization,
     ...resumeValues
   } = resumeSchema.parse(values);
 
   const { userId } = await auth();
 
-  console.log("resumeValues this for testing purposes", resumeValues);
-
   if (!userId) {
     throw new Error("User not authenticated");
+  }
+
+  const subscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
+
+  const resumeCount = await prisma.resume.count({ where: { userId } });
+
+  // Check creation limits
+  const planLimits: Record<string, number | null> = {
+    free: 3,
+    pro: 10,
+    elite: null, // unlimited
+  };
+
+  const currentLimit = planLimits[subscriptionLevel];
+
+  if (!id && currentLimit !== null && resumeCount >= currentLimit) {
+    throw new Error(
+      subscriptionLevel === "free"
+        ? "Free plan allows only 3 resumes. Upgrade to Pro or Elite to create more."
+        : "Pro plan allows only 10 resumes. Upgrade to Elite for unlimited resume creation.",
+    );
+  }
+
+  const template = await prisma.resumeTemplate.findUnique({
+    where: { id: resumeTemplateId },
+  });
+
+  if (!template) {
+    throw new Error("Template not found.");
+  }
+
+  // Check if the template's subscription level is compatible with the user's subscription
+  const templatePlan = template.subscriptionLevel;
+
+  const planRank: Record<string, number> = {
+    free: 0,
+    pro: 1,
+    elite: 2,
+  };
+
+  if (planRank[subscriptionLevel] < planRank[templatePlan]) {
+    throw new Error(
+      `This template is available only for ${templatePlan} plan and higher. Please upgrade your plan to use it.`,
+    );
   }
 
   // Ensure user exists
@@ -142,18 +184,6 @@ export async function saveResume(values: ResumeValues) {
   if (!user) {
     throw new Error("User not found in database. Please try logging in again.");
   }
-
-  // const subscriptionLevel = await getUserSubscriptionLevel(userId);
-
-  // if (!id) {
-  //   const resumeCount = await prisma.resume.count({ where: { userId } });
-
-  //   if (!canCreateResume(subscriptionLevel, resumeCount)) {
-  //     throw new Error(
-  //       "Maximum resume count reached for this subscription level",
-  //     );
-  //   }
-  // }
 
   const existingResume = id
     ? await prisma.resume.findUnique({ where: { id, userId } })

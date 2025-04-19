@@ -16,9 +16,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-// import { useToast } from "@/hooks/use-toast";
-// import usePremiumModal from "@/hooks/usePremiumModal";
-// import { canUseAITools } from "@/lib/permissions";
 import {
     GenerateWorkExperienceInput,
     generateWorkExperienceSchema,
@@ -30,8 +27,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generateWorkExperience } from "./action";
 import { toast } from "sonner";
-// import { useSubscriptionLevel } from "../../SubscriptionLevelProvider";
-// import { generateWorkExperience } from "./actions";
+import { useRequirePro } from "@/lib/gating/requirePro";
+import { useSubscriptionLevel } from "../../SubscriptionLevelProviderWrapper";
 
 interface GenerateWorkExperienceButtonProps {
     onWorkExperienceGenerated: (workExperience: WorkExperience) => void;
@@ -40,22 +37,22 @@ interface GenerateWorkExperienceButtonProps {
 export default function GenerateWorkExperienceButton({
     onWorkExperienceGenerated,
 }: GenerateWorkExperienceButtonProps) {
-    //   const subscriptionLevel = useSubscriptionLevel();
-
-    //   const premiumModal = usePremiumModal();
 
     const [showInputDialog, setShowInputDialog] = useState(false);
-
+    const plan = useSubscriptionLevel()
+    const requirePro = useRequirePro(plan);
     return (
         <>
             <Button
                 variant="outline"
                 type="button"
-                onClick={() => {
-                    //   if (!canUseAITools(subscriptionLevel)) {
-                    //     premiumModal.setOpen(true);
-                    //     return;
-                    //   }
+                onClick={async () => {
+                    const hasAccess = await requirePro({
+                        feature: "Work Experience AI Generation",
+                        description: "Generating work experience using AI is available on Pro and Elite plans. Please upgrade to unlock this feature.",
+                    });
+
+                    if (!hasAccess) return;
                     setShowInputDialog(true);
                 }}
             >
@@ -85,8 +82,6 @@ function InputDialog({
     onOpenChange,
     onWorkExperienceGenerated,
 }: InputDialogProps) {
-    //   const { toast } = useToast();
-
     const form = useForm<GenerateWorkExperienceInput>({
         resolver: zodResolver(generateWorkExperienceSchema),
         defaultValues: {
@@ -108,7 +103,6 @@ function InputDialog({
             console.error(error);
             toast.error("Something went wrong. Please try again.");
         }
-        // console.log("Generated work experience:", input.description);
     }
 
     return (

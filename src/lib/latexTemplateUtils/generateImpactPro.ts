@@ -49,14 +49,14 @@ export function generateImpactPro(
     "<<SCHOOL>>":
       highlightAndEscapeLatex(highestQualification?.school) || "XYZ University",
     "<<SUMMARY>>": resumeData.summary
-      ? ` {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("summary", resumeData.customization)}}\\end{tcolorbox}}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}
+      ? ` {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("summary", resumeData.customization)}}\\end{tcolorbox}}} ${resumeData.summary} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}
   `
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
       ? `
       {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("education", resumeData.customization)}}\\end{tcolorbox}}}
       \\begin{center}
-      \\begin{tabular}{|p{2.5cm}|p{6.0cm}|p{8.0cm}${hasScoreColumn ? "|p{1.8cm}" : ""}|}
+      \\begin{tabular}{|p{2.5cm}|p{6.0cm}${hasScoreColumn ? "|p{8.0cm}|p{1.8cm}" : "|p{9.8cm}"}|}
       \\hline
       \\centering \\textbf{Year} & \\centering \\textbf{Degree/Certificate} & \\centering \\textbf{Institute}${hasScoreColumn ? " & \\centering \\textbf{CPI/\\%}" : ""} \\tabularnewline
       ${resumeData.educations
@@ -72,7 +72,7 @@ export function generateImpactPro(
         .join("\n")}
       \\hline
       \\end{tabular}
-      \\end{center} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+      \\end{center} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
 
     "<<SKILLS>>": resumeData.skills?.length
@@ -83,7 +83,7 @@ export function generateImpactPro(
           )
           .join(
             " ",
-          )} \\end{itemize} \\medskip \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+          )} \\end{itemize} \\medskip \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
       ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("experience", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
@@ -105,7 +105,7 @@ export function generateImpactPro(
                     )
                     .join(" ")} 
                     \\end{itemize} 
-                    \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+                    \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
     "<<PROJECTS>>": resumeData.Projects?.length
       ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("projects", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
@@ -122,7 +122,7 @@ export function generateImpactPro(
           \\vspace{4pt}`,
       ).join(" ")} 
       \\end{itemize} 
-      \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+      \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
     "<<POR>>": resumeData.POR?.length
       ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("por", resumeData.customization)}}\\end{tcolorbox}}} \\begin{itemize}
@@ -139,7 +139,7 @@ export function generateImpactPro(
           \\vspace{4pt}`,
       ).join(" ")} 
       \\end{itemize} 
-      \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+      \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
       ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("extracurriculars", resumeData.customization)}}\\end{tcolorbox}}}
@@ -151,7 +151,7 @@ export function generateImpactPro(
       ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("achievements", resumeData.customization)}}\\end{tcolorbox}}}
          \\begin{itemize}
         ${resumeData.achievements.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
-        \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+        \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
 
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
@@ -174,7 +174,7 @@ export function generateImpactPro(
      \\hline
      \\end{tabular}
      \\end{center}
-     \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+     \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
     "<<CUSTOM_SECTIONS>>": resumeData.customSections?.length
       ? resumeData.customSections
@@ -220,7 +220,7 @@ export function generateImpactPro(
                       })
                       .join(" ")
                   : "") +
-                `\\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`
+                `\\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
               : "",
           )
           .join(" ")

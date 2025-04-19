@@ -1,10 +1,11 @@
-// import { getUserSubscriptionLevel } from "@/lib/subscription";
 import { auth } from "@clerk/nextjs/server";
 import Navbar from "../Navbar";
 import { storeUserOnLogin } from "../(auth)/action";
 import PremiumModal from "@/components/PremiumModal";
 import { redirect } from "next/navigation";
-// import SubscriptionLevelProvider from "./SubscriptionLevelProvider";
+import PlanValidatorWrapper from "@/components/PlanValidatorWrapper";
+import SubscriptionLevelProvider from "./SubscriptionLevelProviderWrapper";
+import { getCurrentUserSubscriptionLevel } from "@/lib/userSubscriptionPlan";
 
 export default async function Layout({
     children,
@@ -23,15 +24,17 @@ export default async function Layout({
         redirect("/onboarding");
     }
 
-    //   const userSubscriptionLevel = await getUserSubscriptionLevel(userId);
+    const userSubscriptionLevel = await getCurrentUserSubscriptionLevel(userId);
 
     return (
-        // <SubscriptionLevelProvider userSubscriptionLevel={userSubscriptionLevel}>
-        <div className="flex min-h-screen flex-col">
-            <Navbar />
-            {children}
-            <PremiumModal />
-        </div>
-        // </SubscriptionLevelProvider>
+        <SubscriptionLevelProvider userSubscriptionLevel={userSubscriptionLevel}>
+            <PlanValidatorWrapper>
+                <div className="flex min-h-screen flex-col">
+                    <Navbar />
+                    {children}
+                    <PremiumModal />
+                </div>
+            </PlanValidatorWrapper>
+        </SubscriptionLevelProvider>
     );
 }

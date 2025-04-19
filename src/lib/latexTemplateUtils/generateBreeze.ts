@@ -16,7 +16,7 @@ export function generateBreeze(
     "<<PAGE_MARGIN>>": resumeData.customization?.margin || "0.75in",
     "<<LINE_SPACING>>": resumeData.customization?.lineSpacing || "1.0",
     "<<SECTION_SPACING>>": resumeData.customization?.sectionSpacing || "0pt",
-    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "2pt",
+    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "-2pt",
     "<<BULLET_ICON>>": resumeData.customization?.bulletIcon || "$\\circ$",
     "<<RGB>>": resumeData.customization?.color || "0.25, 0.5, 0.75",
     "<<WORD_SPACING>>": resumeData.customization?.wordSpacing || "3pt",
@@ -43,11 +43,11 @@ export function generateBreeze(
         \\resumeSubHeadingListStart
         ${resumeData.educations
           .map(
-            (edu) => `  \\resumeSubheading
+            (edu) => `\\resumeSubheading
         {${highlightAndEscapeLatex(edu.school || "IITK")}}{}
-        {${highlightAndEscapeLatex(edu.degree || "BTech")} ~ ${edu.score ? ` ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score || "")}` : ``}{${formatDate(edu.startDate) || "MMM YYYY"} -- ${formatDate(edu.endDate) || "Present"}}`,
+        {${highlightAndEscapeLatex(edu.degree || "BTech")} $|$ ${highlightAndEscapeLatex(edu.branch || "ME")}  ~ ${edu.score ? ` ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score || "")}` : ``}}{${formatDate(edu.startDate) || "MMM YYYY"} -- ${formatDate(edu.endDate) || "Present"}}`,
           )
-          .join("\n")}
+          .join("")}
         \\resumeSubHeadingListEnd`
       : "",
     "<<SKILLS>>": resumeData.skills?.length
@@ -56,9 +56,9 @@ export function generateBreeze(
         ${resumeData.skills
           .map(
             (group) =>
-              `\\resumeItem{${highlightAndEscapeLatex(group.label || "Prgramming languages")}}{: ${group.skills.map(highlightAndEscapeLatex).join(", ")}}`,
+              `\\resumeItem{\\textbf{${highlightAndEscapeLatex(group.label || "Prgramming languages")}}}{: ${group.skills.map(highlightAndEscapeLatex).join(", ")}}`,
           )
-          .join("\n")}
+          .join(" ")}
         \\resumeSubHeadingListEnd`
       : ``,
 
@@ -71,11 +71,10 @@ export function generateBreeze(
                   exp.description
                     ?.map(
                       (desc) =>
-                        `    \\resumeItem{${highlightAndEscapeLatex(desc)}}`,
+                        `\\resumeItem{${highlightAndEscapeLatex(desc)}}`,
                     )
-                    .join("\n") || "\\resumeItem{No description provided}";
-                return `  \\resumeSubheading
-            {${highlightAndEscapeLatex(exp.position || "Full Stack Developer")}}{${highlightAndEscapeLatex(exp.location || "Remote")}}
+                    .join("") || "\\resumeItem{No description provided}";
+                return `\\resumeSubheading{${highlightAndEscapeLatex(exp.position || "Full Stack Developer")}}{${highlightAndEscapeLatex(exp.location || "Remote")}}
             {${highlightAndEscapeLatex(exp.company || "MicroSoft")}}{${formatDate(exp.startDate) || "Jan 2022"} -- ${formatDate(exp.endDate) || "Present"}}
         \\resumeItemListStart
         ${bullets}
@@ -91,14 +90,26 @@ export function generateBreeze(
         ${resumeData.Projects.map((proj) => {
           const bullets =
             proj.description
-              ?.map(
-                (desc) => `    \\resumeItem{${highlightAndEscapeLatex(desc)}}`,
-              )
-              .join("\n") || "\\resumeItem{No description provided}";
+              ?.map((desc) => `\\resumeItem{${highlightAndEscapeLatex(desc)}}`)
+              .join("") || "\\resumeItem{No description provided}";
+          const title = highlightAndEscapeLatex(proj.title || " ");
+          const link = proj.link
+            ? `\\href{${highlightAndEscapeLatex(proj.link)}}{\\small\\faExternalLink}`
+            : "";
+          const github = proj.gitLink
+            ? `\\href{${highlightAndEscapeLatex(proj.gitLink)}}{\\small\\faGithub}`
+            : "";
+
+          const combinedLinks = [link, github].filter(Boolean).join(" $|$ ");
+
+          const dateRange = proj.startDate
+            ? `${formatDate(proj.startDate) || "MMM YYYY"} -- ${formatDate(proj.endDate) || "Present"}`
+            : "";
+
           return `  \\resumeSubheading
-            {${highlightAndEscapeLatex(proj.title || "ReseumXpert AI")}${proj.link ? ` $|$ \\href{${highlightAndEscapeLatex(proj.link)}}{\\small\\faExternalLink}` : ""}}{}
-        {}{${formatDate(proj.startDate) || "Jan 2025"} -- ${formatDate(proj.endDate) || "Present"}}
-            \\resumeItemListStart
+            {${title}${combinedLinks ? ` $|$ ${combinedLinks}` : ""}}{${dateRange}}
+        {}{}
+           \\vspace{-21pt} \\resumeItemListStart
         ${bullets}
             \\resumeItemListEnd`;
         }).join("\n")}
@@ -110,13 +121,10 @@ export function generateBreeze(
         ${resumeData.POR.map((pos) => {
           const bullets =
             pos.description
-              ?.map(
-                (desc) => `    \\resumeItem{${highlightAndEscapeLatex(desc)}}`,
-              )
-              .join("\n") || "\\resumeItem{No description provided}";
-          return `  \\resumeSubheading
-         {${highlightAndEscapeLatex(pos.position || "Senior Executive")}}{${highlightAndEscapeLatex(pos.organization || "Udghosh IITK")}}
-        {${formatDate(pos.startDate) || "Aug 2022"} -- ${formatDate(pos.endDate) || "Present"}}{}
+              ?.map((desc) => `\\resumeItem{${highlightAndEscapeLatex(desc)}}`)
+              .join("") || "\\resumeItem{No description provided}";
+          return `\\resumeSubheading{${highlightAndEscapeLatex(pos.position || "Senior Executive")}}{${formatDate(pos.startDate) || "Aug 2022"} -- ${formatDate(pos.endDate) || "Present"}}{${highlightAndEscapeLatex(pos.organization || "Udghosh IITK")}}
+        {}
          \\resumeItemListStart
         ${bullets}
      \\resumeItemListEnd`;

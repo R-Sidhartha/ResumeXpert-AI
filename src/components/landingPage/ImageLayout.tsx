@@ -1,6 +1,7 @@
 import Image from "next/image";
-import img1 from "@/assets/image1.jpg";
-import img2 from "@/assets/image2.jpg";
+import breeze from "@/assets/Breeze.jpg";
+import impactpro from "@/assets/impactpro.jpg";
+import slate from "@/assets/slate.jpg"
 
 export default function ImageLayout() {
     return (
@@ -9,7 +10,7 @@ export default function ImageLayout() {
                 {/* Left Image (Behind Middle) */}
                 <div className="absolute top-8 md:top-12 left-5 md:left-10 w-[45%] sm:w-[38%] md:w-[30%] z-0 shadow-md">
                     <Image
-                        src={img1}
+                        src={breeze}
                         width={400}
                         height={500}
                         alt="Template 1"
@@ -20,7 +21,7 @@ export default function ImageLayout() {
                 {/* Center Image (Largest & Front) */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[50%] sm:w-[45%] md:w-[36%] z-10 shadow-xl">
                     <Image
-                        src={img2}
+                        src={impactpro}
                         width={450}
                         height={550}
                         alt="Template 2"
@@ -31,7 +32,7 @@ export default function ImageLayout() {
                 {/* Right Image (Behind Middle) */}
                 <div className="absolute top-8 md:top-12 right-5 md:right-10 w-[45%] sm:w-[38%] md:w-[30%] z-0 shadow-md">
                     <Image
-                        src={img1}
+                        src={slate}
                         width={400}
                         height={500}
                         alt="Template 3"

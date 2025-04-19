@@ -26,6 +26,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { generatePOR } from "./action";
 import { toast } from "sonner";
+import { useRequirePro } from "@/lib/gating/requirePro";
+import { useSubscriptionLevel } from "../../SubscriptionLevelProviderWrapper";
 // import { useSubscriptionLevel } from "../../SubscriptionLevelProvider";
 // import { generateWorkExperience } from "./actions";
 
@@ -41,17 +43,20 @@ export default function GeneratePORButton({
     //   const premiumModal = usePremiumModal();
 
     const [showInputDialog, setShowInputDialog] = useState(false);
-
+    const plan = useSubscriptionLevel()
+    const requirePro = useRequirePro(plan);
     return (
         <>
             <Button
                 variant="outline"
                 type="button"
-                onClick={() => {
-                    //   if (!canUseAITools(subscriptionLevel)) {
-                    //     premiumModal.setOpen(true);
-                    //     return;
-                    //   }
+                onClick={async () => {
+                    const hasAccess = await requirePro({
+                        feature: "Projects AI Generation",
+                        description: "Generating projects using AI is available on Pro and Elite plans. Please upgrade to unlock this feature.",
+                    });
+
+                    if (!hasAccess) return;
                     setShowInputDialog(true);
                 }}
             >

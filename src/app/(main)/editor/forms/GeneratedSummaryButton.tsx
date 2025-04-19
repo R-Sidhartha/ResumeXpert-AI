@@ -7,6 +7,8 @@ import { WandSparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { generateSummary } from "./action";
 import { toast } from "sonner";
+import { useRequirePro } from "@/lib/gating/requirePro";
+import { useSubscriptionLevel } from "../../SubscriptionLevelProviderWrapper";
 // import { useSubscriptionLevel } from "../../SubscriptionLevelProvider";
 
 interface GenerateSummaryButtonProps {
@@ -25,12 +27,16 @@ export default function GenerateSummaryButton({
     //   const { toast } = useToast();
 
     const [loading, setLoading] = useState(false);
+    const plan = useSubscriptionLevel()
+    const requirePro = useRequirePro(plan);
 
     async function handleClick() {
-        // if (!canUseAITools(subscriptionLevel)) {
-        //   premiumModal.setOpen(true);
-        //   return;
-        // }
+        const hasAccess = await requirePro({
+            feature: "Projects AI Generation",
+            description: "Generating projects using AI is available on Pro and Elite plans. Please upgrade to unlock this feature.",
+        });
+
+        if (!hasAccess) return;
 
         try {
             setLoading(true);

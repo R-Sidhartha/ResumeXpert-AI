@@ -1,85 +1,55 @@
 "use client";
 
-// import { env } from "@/env";
-// import { useToast } from "@/hooks/use-toast";
-// import usePremiumModal from "@/hooks/usePremiumModal";
-// import { Check } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
-// import Link from "next/link";
 import usePremiumModal from "@/hooks/usePremiumModal";
 import { useRouter } from "next/navigation";
-// import { Button } from "../ui/button";
-// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-// import { createCheckoutSession } from "./actions";
-
-// const premiumFeatures = ["AI tools", "Up to 3 resumes"];
-// const premiumPlusFeatures = ["Infinite resumes", "Design customizations"];
+import { Sparkles } from "lucide-react";
 
 export default function PremiumModal() {
-    const { open, setOpen } = usePremiumModal();
-
-    //   const { toast } = useToast();
-
+    const { open, setOpen, title, description, feature } = usePremiumModal();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-
-    //   async function handlePremiumClick(priceId: string) {
-    //     try {
-    //       setLoading(true);
-    //       const redirectUrl = await createCheckoutSession(priceId);
-    //       window.location.href = redirectUrl;
-    //     } catch (error) {
-    //       console.error(error);
-    //       toast({
-    //         variant: "destructive",
-    //         description: "Something went wrong. Please try again.",
-    //       });
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   }
-
     const handleViewPlans = () => {
         if (!loading) {
-            setOpen(false); // close modal first
-            router.push("/subscriptions"); // then navigate
+            setOpen(false);
+            router.push("/subscriptions");
         }
     };
 
-
     return (
-        <Dialog
-            open={open}
-            onOpenChange={(open) => {
-                if (!loading) {
-                    setOpen(open);
-                }
-            }}
-        >
-            <DialogContent className="max-w-xl">
+        <Dialog open={open} onOpenChange={(open) => !loading && setOpen(open)}>
+            <DialogContent className="max-w-xl rounded-2xl p-6 shadow-xl border bg-background">
                 <DialogHeader>
-                    <DialogTitle>ResumeXpert AI Premium</DialogTitle>
-                    <p>Get a premium subscription to unlock more features.</p>
+                    <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+                        <Sparkles className="w-6 h-6 text-yellow-500" />
+                        {title || "Unlock Premium Features"}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground">
+                        {description ||
+                            `This feature ${feature ? `"${feature}" ` : ""}requires a premium plan. Upgrade to continue.`}
+                    </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-6">
-                    <div className="w-full flex gap-4 mx-auto">
-                        <Button onClick={handleViewPlans}
-                            disabled={loading}
-                        >
-                            View Plans
-                        </Button>
-                        <Button
-                            disabled={loading}
-                            onClick={() => {
-                                setOpen(false);
-                            }}
-                        >
-                            Close
-                        </Button>
-                    </div>
+
+                <div className="mt-6 flex justify-end gap-3">
+                    <Button
+                        onClick={handleViewPlans}
+                        disabled={loading}
+                        className="bg-yellow-500 text-white hover:bg-yellow-600"
+                    >
+                        View Plans
+                    </Button>
+                    <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
+                        Close
+                    </Button>
                 </div>
             </DialogContent>
         </Dialog>

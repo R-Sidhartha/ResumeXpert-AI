@@ -28,7 +28,7 @@ export function generateStacked(
     "<<PHONE>>": highlightAndEscapeLatex(resumeData.phone || "+1234567890"),
     "<<PORTFOLIO>>": resumeData.portfolio
       ? `\\href{${highlightAndEscapeLatex(resumeData.portfolio)}}{
-    \\raisebox{-0.05\\height} \\faGlobe {Portfolio}} ~ | ~`
+    \\raisebox{-0.05\\height} \\faGlobe\\ {Portfolio}} |`
       : "",
     "<<LINKEDIN>>": highlightAndEscapeLatex(
       resumeData.linkedIn || "https://linkedin.com/in/johndoe",
@@ -48,21 +48,21 @@ export function generateStacked(
            (edu) =>
              `\\headingBf{${highlightAndEscapeLatex(edu.degree)}}{${formatYear(
                edu.startDate,
-             )} - ${formatYear(edu.endDate) || "Present"}} \\\\ \\headingIt{${highlightAndEscapeLatex(edu.school)} ${highlightAndEscapeLatex(edu.score) ? `~ ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score) || ""}` : ""}}{}`,
+             )} - ${formatYear(edu.endDate) || "Present"}} \\headingIt{${highlightAndEscapeLatex(edu.school)} ${highlightAndEscapeLatex(edu.score) ? `~ ${getScoreLabel(edu.score)} | ${highlightAndEscapeLatex(edu.score) || ""}` : ""}}{}`,
          )
-         .join("\\\\")}
+         .join("\n")}
           \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
         : "",
     "<<SKILLS>>":
       resumeData.skills && resumeData.skills?.length
-        ? `\\section{${getSectionTitle("skills", resumeData.customization)}} \\begin{itemize} ` +
+        ? `\\section{${getSectionTitle("skills", resumeData.customization)}} \\vspace{4pt} \\begin{resume_list} ` +
           resumeData.skills
             .map(
               (skillGroup) =>
-                `\\item [\\textbf{${highlightAndEscapeLatex(skillGroup.label)}:}] ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
+                `\\item \\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
             )
             .join(" ") +
-          ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+          ` \\end{resume_list} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
         : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
       ? `\\section{${getSectionTitle("experience", resumeData.customization)}}

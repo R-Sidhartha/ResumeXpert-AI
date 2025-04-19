@@ -170,7 +170,7 @@ export default function CustomizationPanel({ value, onChange, onSave,
                 <h3 className="text-md font-medium text-zinc-700 dark:text-white mt-10 mb-2">
                     Section Order
                 </h3>
-                {/* {plan === "gold" || plan === "diamond" ? ( */}
+                {/* {plan === "pro" || plan === "elite" ? ( */}
                 <div className="mt-2 mb-3">
                     <SectionReorder
                         onChange={(newOrder) => onChange({ ...value, sectionOrder: newOrder })}

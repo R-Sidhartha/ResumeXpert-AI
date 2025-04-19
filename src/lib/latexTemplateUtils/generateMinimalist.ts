@@ -17,7 +17,7 @@ export function generateMinimalist(
     "<<PAGE_MARGIN>>": resumeData.customization?.margin || "0.4in",
     "<<LINE_SPACING>>": resumeData.customization?.lineSpacing || "1.0",
     "<<SECTION_SPACING>>": resumeData.customization?.sectionSpacing || "0pt",
-    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "2pt",
+    "<<ITEM_SPACING>>": resumeData.customization?.itemSpacing || "0pt",
     "<<BULLET_ICON>>": resumeData.customization?.bulletIcon || "\\faAngleRight",
     "<<RGB>>": resumeData.customization?.color || "0.25, 0.5, 0.75",
     "<<WORD_SPACING>>": resumeData.customization?.wordSpacing || "3pt",
@@ -50,14 +50,14 @@ export function generateMinimalist(
       : "",
     "<<SKILLS>>": resumeData.skills?.length
       ? `\\section{${getSectionTitle("skills", resumeData.customization)}}
-\\begin{onecolentry} ` +
+\\begin{onecolentry} \\begin{highlights}` +
         resumeData.skills
           .map(
             (skillGroup) =>
-              `\\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
+              `\\item \\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
           )
           .join(" ") +
-        ` \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
+        `\\end{highlights} \\end{onecolentry} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"} }`
       : ``,
     "<<EXPERIENCE>>": resumeData.workExperiences?.length
       ? `\\section{${getSectionTitle("experience", resumeData.customization)}}
@@ -80,7 +80,7 @@ export function generateMinimalist(
       ? `\\section{${getSectionTitle("projects", resumeData.customization)}}
       ${resumeData.Projects?.map(
         (proj) =>
-          `\\begin{twocolentry}{${proj.startDate ? `${formatDate(proj.startDate) || ""} - ${formatDate(proj.endDate) || "Present"}` : ``}} {\\textbf{${proj.title}} ${highlightAndEscapeLatex(proj.link) ? `$|$ \\href{${highlightAndEscapeLatex(proj.link)}}{link \\faExternalLink}}` : ""}} \\end{twocolentry}` +
+          `\\begin{twocolentry}{${proj.startDate ? `${formatDate(proj.startDate) || ""} - ${formatDate(proj.endDate) || "Present"}` : ``}} {\\textbf{${proj.title}} ${highlightAndEscapeLatex(proj.link) ? `$|$ \\href{${highlightAndEscapeLatex(proj.link)}}{link \\faExternalLink}` : ""}} \\end{twocolentry}` +
           `\\begin{onecolentry} \\begin{highlights} ` +
           (proj.description
             ?.map((desc) => `\\item ${highlightAndEscapeLatex(desc)}`)

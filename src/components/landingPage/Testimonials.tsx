@@ -6,13 +6,10 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import img1 from "@/assets/image1.jpg"
-import img2 from "@/assets/image2.jpg"
 const testimonials = [
     {
         name: "Leslie Alexander",
         role: "Freelance React Developer",
-        image: img1,
         review:
             "ResumeXpert AI transformed my basic resume into something that truly reflected my strengths. Within a week, I started getting interview calls I never got before.",
         rating: 5,
@@ -20,7 +17,6 @@ const testimonials = [
     {
         name: "Jane Cooper",
         role: "Senior UI/UX Designer",
-        image: img2,
         review:
             "I used ResumeXpert AI to revamp my resume after being stuck in the same job for years. I finally landed my dream role at a top product-based company!",
         rating: 5,
@@ -28,7 +24,6 @@ const testimonials = [
     {
         name: "Robert Fox",
         role: "Full Stack Developer",
-        image: img1,
         review:
             "The AI-generated content was shockingly good. It gave me crisp, result-oriented bullet points that passed ATS checks effortlessly.",
         rating: 5,
@@ -36,7 +31,6 @@ const testimonials = [
     {
         name: "Robert Fox2",
         role: "Full Stack Developer",
-        image: img1,
         review:
             "As a fresher, I had no clue how to present my projects and internships. ResumeXpert AI did it for me—and it worked!",
         rating: 5,
@@ -44,7 +38,6 @@ const testimonials = [
     {
         name: "Aman S",
         role: "Final Year B.Tech Student, IIT Roorkee",
-        image: img1,
         review:
             "ResumeXpert AI generated a pixel-perfect LaTeX resume for me in under 5 minutes. It was tailored exactly to the job description—and I got the callback!",
         rating: 5,
@@ -52,7 +45,6 @@ const testimonials = [
     {
         name: "Rohan T",
         role: " Data Analyst, Pune",
-        image: img1,
         review:
             "I’ve used dozens of resume builders before, but nothing comes close to the precision of ResumeXpert AI. Fast, ATS-friendly, and beautifully formatted in LaTeX.",
         rating: 5,

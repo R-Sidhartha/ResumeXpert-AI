@@ -35,6 +35,8 @@ import { GripHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import BulletTextarea from "@/components/BulletTextarea";
+import { useRequirePro } from "@/lib/gating/requirePro";
+import { useSubscriptionLevel } from "../../SubscriptionLevelProviderWrapper";
 
 export default function CustomSectionForm({ resumeData, setResumeData }: EditorFormProps) {
     const form = useForm<CustomSectionValues>({
@@ -43,6 +45,8 @@ export default function CustomSectionForm({ resumeData, setResumeData }: EditorF
             customSections: resumeData.customSections || [],
         },
     });
+    const plan = useSubscriptionLevel()
+    const requirePro = useRequirePro(plan);
 
     useEffect(() => {
         const { unsubscribe } = form.watch(async (values) => {
@@ -110,12 +114,19 @@ export default function CustomSectionForm({ resumeData, setResumeData }: EditorF
                     <div className="flex justify-center">
                         <Button
                             type="button"
-                            onClick={() =>
+                            onClick={async () => {
+                                const hasAccess = await requirePro({
+                                    feature: "Custom Section",
+                                    description: "Custom section feature is available on Pro and Elite plans. Please upgrade to unlock this feature.",
+                                });
+
+                                if (!hasAccess) return;
                                 append({
                                     title: "",
                                     // order: 0, // assuming ordering starts at 0
                                     entries: [],
                                 })
+                            }
                             }
                             className="flex items-center gap-2"
                         >

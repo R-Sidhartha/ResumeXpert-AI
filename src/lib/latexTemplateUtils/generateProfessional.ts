@@ -44,7 +44,7 @@ export function generateProfessional(
       highlightAndEscapeLatex(resumeData.github) ||
       "https://github.com/johndoe",
     "<<DEGREE>>":
-      highlightAndEscapeLatex(highestQualification?.degree) || "B.Tech",
+      highlightAndEscapeLatex(highestQualification?.degree) || "Degree",
     "<<SCHOOL>>":
       highlightAndEscapeLatex(highestQualification?.school) || "XYZ University",
 
@@ -53,7 +53,7 @@ export function generateProfessional(
   `
       : ``,
     "<<EDUCATION>>": resumeData.educations?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("education", resumeData.customization)}}\\end{tcolorbox}}} \\begin{center} \\vspace{-4pt} \\begin{tabular}{|p{3.5cm}|p{6.0cm}|p{9.5cm}${hasScoreColumn ? "|p{2.5cm}" : ""}|} \\hline \\centering \\textbf{Year} & \\centering \\textbf{Degree/Certificate} & \\centering \\textbf{Institute}${hasScoreColumn ? ` & \\centering \\textbf{CPI/\\%}` : ""} \\tabularnewline
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("education", resumeData.customization)}}\\end{tcolorbox}}} \\begin{center} \\vspace{-4pt} \\begin{tabular}{|p{3.5cm}|p{6.0cm}|p{9.5cm}${hasScoreColumn ? "|p{2.5cm}" : ""}|} \\hline \\centering \\textbf{Year} & \\centering \\textbf{Degree/Certificate} & \\centering \\textbf{Institute}${hasScoreColumn ? ` & \\centering \\textbf{CPI/\\%}` : ""} \\tabularnewline
       ${resumeData.educations
         ?.map(
           (edu) =>
@@ -66,10 +66,10 @@ export function generateProfessional(
         )
         .join(
           " ",
-        )} \\hline \\end{tabular} \\end{center} \\vspace{-7pt} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
+        )} \\hline \\end{tabular} \\end{center} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : ``,
     "<<SKILLS>>": resumeData.skills?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("skills", resumeData.customization)}}\\end{tcolorbox}}} \\vspace{-5pt} \\begin{itemize} ${resumeData.skills
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("skills", resumeData.customization)}}\\end{tcolorbox}}} \\vspace{-5pt} \\begin{itemize} ${resumeData.skills
           .map(
             (skillGroup) =>
               `\\item \\textbf{${highlightAndEscapeLatex(skillGroup.label)}:} ${skillGroup.skills.map(highlightAndEscapeLatex).join(", ")}`,
@@ -83,7 +83,7 @@ export function generateProfessional(
                   ${resumeData.workExperiences
                     ?.map(
                       (exp) =>
-                        `\\vspace{-5pt} \\begin{mybox}
+                        ` \\begin{mybox}
              \\textbf{${highlightAndEscapeLatex(exp.position)}} $|$ ${highlightAndEscapeLatex(exp.company)} \\hfill\\hfill(\\textit{${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}})
               \\end{mybox}` + // Adds subsection with right-aligned dates
                         `\\vspace{-5pt} \\begin{itemize} ` +
@@ -93,26 +93,26 @@ export function generateProfessional(
                           )
                           .join(" ") ||
                           `\\item Worked on key projects and delivered high-quality results.`) +
-                        ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`,
+                        ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`,
                     )
                     .join(" ")}`
       : "",
     "<<PROJECTS>>": resumeData.Projects?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("projects", resumeData.customization)}}\\end{tcolorbox}}}
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("projects", resumeData.customization)}}\\end{tcolorbox}}}
       ${resumeData.Projects?.map(
         (proj) =>
-          `\\vspace{-5pt} \\begin{mybox}
+          ` \\begin{mybox}
              \\textbf{${highlightAndEscapeLatex(proj.title)}} ${proj.link ? ` | \\href{${highlightAndEscapeLatex(proj.link)}}{\\faGlobe}` : ""} ${proj.gitLink ? ` $|$ \\href{${highlightAndEscapeLatex(proj.gitLink)}}{\\faGithub}` : ""}
               \\end{mybox}` +
           `\\vspace{-5pt} \\begin{itemize} ` +
           (proj.description
             ?.map((desc) => `\\item ${highlightAndEscapeLatex(desc)}`)
             .join(" ") || `\\item Developed using modern web technologies.`) +
-          ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`,
+          ` \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "4pt"}}`,
       ).join(" ")}`
       : "",
     "<<POR>>": resumeData.POR?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("por", resumeData.customization)}}\\end{tcolorbox}}}
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("por", resumeData.customization)}}\\end{tcolorbox}}}
       ${resumeData.POR?.map(
         (por) =>
           `\\vspace{-5pt} \\begin{mybox}
@@ -126,20 +126,20 @@ export function generateProfessional(
       ).join(" ")}`
       : "",
     "<<EXTRA_CURRICULARS>>": resumeData.extraCurriculars?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("extracurriculars", resumeData.customization)}}\\end{tcolorbox}}}
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("extracurriculars", resumeData.customization)}}\\end{tcolorbox}}}
         \\vspace{-5pt} \\begin{itemize}
             ${resumeData.extraCurriculars.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : ``,
     "<<ACHIEVEMENTS>>": resumeData.achievements?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("achievements", resumeData.customization)}}\\end{tcolorbox}}}
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("achievements", resumeData.customization)}}\\end{tcolorbox}}}
         \\vspace{-5pt} \\begin{itemize}
         ${resumeData.achievements.map((item) => `  \\item ${highlightAndEscapeLatex(item)}`).join("\n")}
         \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
       : "",
 
     "<<CERTIFICATIONS>>": resumeData.certifications?.length
-      ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("certifications", resumeData.customization)}}\\end{tcolorbox}}}
+      ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${getSectionTitle("certifications", resumeData.customization)}}\\end{tcolorbox}}}
        \\vspace{-5pt}  \\begin{itemize}
         ${resumeData.certifications.map((cert) => `  \\item ${highlightAndEscapeLatex(cert)}`).join("\n")}
         \\end{itemize} \\vspace{${resumeData.customization?.sectionSpacing || "0pt"}}`
@@ -148,7 +148,7 @@ export function generateProfessional(
       ? resumeData.customSections
           .map((section) =>
             section.title
-              ? `{\\large \\textbf{\\begin{tcolorbox}\\textsc{${highlightAndEscapeLatex(
+              ? `\\vspace{-6pt} {\\large \\textbf{\\begin{tcolorbox}\\textsc{${highlightAndEscapeLatex(
                   section.title,
                 )}}\\end{tcolorbox}}}\n` +
                 (section.entries?.length

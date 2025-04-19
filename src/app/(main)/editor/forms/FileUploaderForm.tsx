@@ -16,6 +16,8 @@ import { generateFormattedResume } from '@/app/(main)/editor/forms/action';
 import { EditorFormProps } from '@/lib/types';
 import { mergeAIContentIntoResumeData } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useRequirePro } from '@/lib/gating/requirePro';
+import { useSubscriptionLevel } from '../../SubscriptionLevelProviderWrapper';
 
 const uploadSchema = z.object({
     extractedText: z.string().min(1, 'Text must be extracted from file before generating resume.'),
@@ -27,6 +29,8 @@ export default function FileUploadForm({ resumeData, setResumeData }: EditorForm
     const [loading, setLoading] = useState(false);
     const [aiLoading, setAiLoading] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const plan = useSubscriptionLevel()
+    const requirePro = useRequirePro(plan);
 
     const form = useForm<UploadFormValues>({
         resolver: zodResolver(uploadSchema),
@@ -36,6 +40,12 @@ export default function FileUploadForm({ resumeData, setResumeData }: EditorForm
     });
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
+        const hasAccess = await requirePro({
+            feature: "Resume Text Extraction",
+            description: "Uploading and extracting text from resumes is a premium feature. Please upgrade to Pro or Elite.",
+        });
+
+        if (!hasAccess) return;
         const file = acceptedFiles[0];
         if (!file || uploadedFile) return;
 
@@ -58,7 +68,7 @@ export default function FileUploadForm({ resumeData, setResumeData }: EditorForm
         } finally {
             setLoading(false);
         }
-    }, [form, uploadedFile]);
+    }, [form, uploadedFile, requirePro]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -111,8 +121,20 @@ export default function FileUploadForm({ resumeData, setResumeData }: EditorForm
                 className={`border-2 border-dashed p-8 rounded-xl text-center transition-all cursor-pointer
                     ${uploadedFile ? 'border-gray-200 bg-gray-50 cursor-not-allowed' : 'border-gray-300 hover:border-blue-500'}
                 `}
+            // onClick={async (e) => {
+            //     // e.preventDefault(); // Prevent by default
+            //     const hasAccess = await requirePro({
+            //         feature: "Resume Upload",
+            //         description: "Uploading and extracting text from resumes is a premium feature. Please upgrade to Pro or Elite.",
+            //     });
+
+            //     if (hasAccess && !uploadedFile) {
+            //         // If user has access and hasn't uploaded, simulate file input click
+            //         getInputProps().onClick?.(e as any);
+            //     }
+            // }}
             >
-                <input {...getInputProps()} />
+                <input {...getInputProps()} disabled={uploadedFile ? true : false} />
                 <p className="text-sm text-gray-500">
                     {uploadedFile
                         ? 'A file is already uploaded'
@@ -140,6 +162,9 @@ export default function FileUploadForm({ resumeData, setResumeData }: EditorForm
                     </button>
                 </div>
             )}
+            <p className="text-sm text-yellow-600 my-2">
+                <strong>Note:</strong> Please review the extracted text carefully to ensure all fields are accurate and nothing important is missing.
+            </p>
 
             <Form {...form}>
                 <form className="space-y-4">

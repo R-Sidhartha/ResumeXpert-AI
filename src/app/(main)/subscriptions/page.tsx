@@ -2,11 +2,12 @@
 
 import React from "react";
 import clsx from "clsx";
+import { SubscriptionButton } from "../billing/SubscriptionButton";
 
 const plans = [
     { name: "Free", price: "0", perks: ["1 Template", "3 Resumes"], bg: "bg-gray-100 dark:bg-gray-800" },
     { name: "Xpert-Pro", price: "149/-", perks: ["5 Templates", "10 Resumes", "AI Enhancement"], bg: "bg-green-600 text-white" },
-    { name: "Xpert-Elite", price: "249/-", perks: ["All Templates", "Unlimited Resumes", "AI Enhancement", "ATS Checker", "Job Recommendations"], bg: "bg-gray-100 dark:bg-gray-800" },
+    { name: "Xpert-Elite", price: "249/-", perks: ["All Templates", "Unlimited Resumes", "AI Enhancement"], bg: "bg-gray-100 dark:bg-gray-800" },
 ];
 
 const features = [
@@ -14,8 +15,8 @@ const features = [
     { title: "No. of Resumes", values: ["03", "10", "Unlimited"] },
     { title: "Customizations", values: ["-", "✔️", "✔️"] },
     { title: "AI Enhancement", values: ["-", "✔️", "✔️"] },
-    { title: "ATS Checker", values: ["-", "-", "✔️"] },
-    { title: "Job Recommendations", values: ["-", "-", "✔️"] },
+    // { title: "ATS Checker", values: ["-", "-", "✔️"] },
+    // { title: "Job Recommendations", values: ["-", "-", "✔️"] },
 ];
 
 export default function PricingPage() {
@@ -76,19 +77,22 @@ export default function PricingPage() {
                                     ))}
                                 </tr>
                             ))}
+
+                            {/* Subscription Buttons Row */}
                             <tr>
                                 <td className="py-6 pr-4"></td>
-                                {["Free", "Pro", "Elite"].map((plan, i) => (
+                                {["Free", "Xpert-Pro", "Xpert-Elite"].map((plan, i) => (
                                     <td key={i} className={clsx(
                                         "px-4 py-6 text-center",
                                         i === 1 ? "bg-green-600 text-black rounded-b-xl" : "dark:bg-gray-800"
                                     )}>
-                                        <a href="#" className="inline-flex items-center font-semibold hover:underline">
-                                            Get Started
-                                            <svg className="w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                                            </svg>
-                                        </a>
+                                        {plan === "Free" ? (
+                                            <p className="text-lg font-semibold">No Subscription</p>
+                                        ) : (
+                                            <div className="inline-flex justify-center min-w-[150px]">
+                                                <SubscriptionButton planType={plan === "Xpert-Pro" ? "pro" : "elite"} />
+                                            </div>
+                                        )}
                                     </td>
                                 ))}
                             </tr>
@@ -113,9 +117,13 @@ export default function PricingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <button className="mt-6 w-full py-2 text-white bg-green-600 rounded-lg hover:bg-green-700">
-                                Get Started
-                            </button>
+                            {plan.name === "Free" ? (
+                                <a href="/editor" className="mt-6 block w-full py-2 text-center text-white bg-indigo-600 rounded-lg">
+                                    Start Free
+                                </a>
+                            ) : (
+                                <SubscriptionButton planType={plan.name === "Xpert-Pro" ? "pro" : "elite"} />
+                            )}
                         </div>
                     ))}
                 </div>

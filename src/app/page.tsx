@@ -22,7 +22,7 @@ export default function Home() {
             Build professional, ATS-friendly resumes in minutes. Choose a template, personalize, and download instantly.
           </p>
           {/* <Button className="px-3 md:px-6 py-3 text-base md:text-lg font-semibold cursor-pointer" asChild>
-            <Link href="/resumes" className="cursor-pointer">
+            <Link href="/resume-templates" className="cursor-pointer">
               Get Started
             </Link>
           </Button> */}

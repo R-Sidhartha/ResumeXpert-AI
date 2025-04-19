@@ -3,10 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-// import { useEffect, useState, Suspense } from "react";
-// import dynamic from "next/dynamic";
-// import { getThumbnailFromCache, storeThumbnailInCache } from "@/lib/indexeddb/cache";
-import { MoreVertical, Trash2, X } from "lucide-react";
+import { LockIcon, MoreVertical, Trash2, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ResumeServerData } from "@/lib/types";
@@ -16,6 +13,8 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import LoadingButton from "@/components/LoadingButton";
 import { ThumbnailImage } from "@/components/ThumbnailImage";
+import { useRequirePremium } from "@/lib/requirePremium";
+import { useSubscriptionLevel } from "./SubscriptionLevelProviderWrapper";
 
 interface ResumeTemplate {
     id: string;
@@ -26,15 +25,38 @@ interface ResumeTemplate {
     thumbnailUrl: string;
 }
 
+type PlanType = keyof typeof planRank;
 interface ResumeItemProps {
     template?: ResumeTemplate;
     userResume?: ResumeServerData;
     context: "templates" | "userResumes";
+    userResumeCount: number;
 }
 
-export default function ResumeItem({ userResume, context, template }: ResumeItemProps) {
+const planRank = {
+    free: 0,
+    pro: 1,
+    elite: 2,
+};
+
+const planLimits = {
+    free: 3,
+    pro: 10,
+    elite: Infinity,
+};
+
+
+export default function ResumeItem({ userResume, context, template, userResumeCount }: ResumeItemProps) {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    // Determine the redirect URL dynamically
+    const requirePremium = useRequirePremium();
+
+    const userPlan = useSubscriptionLevel()
+
+    const maxAllowed = planLimits[userPlan] ?? 0;
+    const canCreate = userResumeCount < maxAllowed;
+
+    const isLocked = planRank[userPlan as PlanType] < planRank[template?.subscriptionLevel as PlanType];
+
     const href =
         context === "userResumes"
             ? `/editor?resumeId=${userResume?.id}` // Editing an existing resume
@@ -48,11 +70,34 @@ export default function ResumeItem({ userResume, context, template }: ResumeItem
     const updatedAt = userResume?.updatedAt ? new Date(userResume.updatedAt).toLocaleDateString() : null;
     const isUpdated = createdAt !== updatedAt;
 
+    const handleTemplateClick = () => {
+        if (isLocked) {
+            requirePremium({
+                feature: "Premium Templates",
+                description:
+                    "This template is not available in the Free plan. Please upgrade to Pro or Elite to access premium templates.",
+            });
+        } else if (!canCreate) {
+            requirePremium({
+                feature: "Resume Creation Limit Reached",
+                description:
+                    userPlan === "free"
+                        ? "Free plan allows only 3 resumes. Upgrade to Pro or Elite to create more."
+                        : "Pro plan allows only 10 resumes. Upgrade to Elite for unlimited resume creation.",
+            });
+        }
+    };
+
 
     return (
         <>
             <Card className="group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-xl px-4 py-3 bg-zinc-100 dark:bg-zinc-800 transition-all duration-300 ease-in-out">
                 <CardHeader>
+                    {isLocked && (
+                        <div className="absolute top-2 right-2 z-10">
+                            <LockIcon className="text-white w-5 h-5 bg-yellow-500 p-1 rounded-full" />
+                        </div>
+                    )}
                     <CardTitle className="capitalize">{context === "userResumes" ? userResume?.title || "Untitled Resume" : template?.name || "No Title"}</CardTitle>
                     <CardDescription className="flex flex-col gap-1">
                         {context === "userResumes" ? userResume?.description || "Crafted with precision to showcase your best self." : template?.description || "Professionally designed to help you stand out with clarity and confidence."}
@@ -63,14 +108,28 @@ export default function ResumeItem({ userResume, context, template }: ResumeItem
                         <span className="text-xs text-zinc-800 dark:text-zinc-300">{isUpdated ? `Updated at: ${updatedAt}` : `Created at: ${createdAt}`}</span>
                     )}
                     {thumbnailUrl && (
-                        <Link href={href}>
-                            {context === "userResumes" ? (
+                        context === "userResumes" ? (
+                            <Link href={href}>
                                 <ThumbnailImage
                                     resumeId={userResume?.id || ""}
                                     fallbackUrl={thumbnailUrl}
                                     altText={userResume?.title || "User Resume Thumbnail"}
                                 />
-                            ) : (
+                            </Link>
+                        ) : isLocked || !canCreate ? (
+                            <div onClick={handleTemplateClick} className=" opacity-70" role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => e.key === 'Enter' && handleTemplateClick()}>
+                                <Image
+                                    src={thumbnailUrl}
+                                    width={800}
+                                    height={200}
+                                    alt={template?.name || "Locked Template"}
+                                    className="w-full border border-gray-300"
+                                />
+                            </div>
+                        ) : (
+                            <Link href={href}>
                                 <Image
                                     src={thumbnailUrl}
                                     width={800}
@@ -78,8 +137,8 @@ export default function ResumeItem({ userResume, context, template }: ResumeItem
                                     alt={template?.name || "Template"}
                                     className="w-full cursor-pointer border border-gray-300"
                                 />
-                            )}
-                        </Link>
+                            </Link>
+                        )
                     )}
                 </CardContent>
                 <CardFooter className="flex flex-col items-center gap-2 p-4">

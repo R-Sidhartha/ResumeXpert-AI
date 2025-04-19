@@ -1,48 +1,19 @@
-// import { canCreateResume } from "@/lib/permissions";
-// import prisma from "@/lib/prisma";
-// import { getUserSubscriptionLevel } from "@/lib/subscription";
-// import { resumeDataInclude } from "@/lib/types";
-// import { auth } from "@clerk/nextjs/server";
 import { Metadata } from "next";
 import CreateResumeButton from "./CreateResumeButton";
 import { getUserResumes } from "./action";
 import ResumeItem from "../ResumeItem";
 import Link from "next/link";
-// import ResumeItem from "./ResumeItem";
 
 export const metadata: Metadata = {
-    title: "Your resumes",
+    title: "My Resumes",
 };
 
 export default async function Page() {
-    // const { userId } = await auth();
-
-    // if (!userId) {
-    //     return null;
-    // }
 
     const userResumes = await getUserResumes();
     if (!userResumes) {
         console.error("No resumes found for user");
     }
-
-    //   const [resumes, totalCount, subscriptionLevel] = await Promise.all([
-    //     prisma.resume.findMany({
-    //       where: {
-    //         userId,
-    //       },
-    //       orderBy: {
-    //         updatedAt: "desc",
-    //       },
-    //       include: resumeDataInclude,
-    //     }),
-    //     prisma.resume.count({
-    //       where: {
-    //         userId,
-    //       },
-    //     }),
-    //     getUserSubscriptionLevel(userId),
-    //   ]);
 
     return (
         <main className="mx-auto w-full max-w-7xl space-y-6 px-3 py-6">
@@ -53,14 +24,13 @@ export default async function Page() {
                         <p>Total: {userResumes.count}</p>}
                 </div>
                 <CreateResumeButton
-                    // canCreate={canCreateResume(subscriptionLevel, totalCount)}
-                    canCreate={(userResumes?.count ?? 0) < 4}
+                    currentResumeCount={(userResumes?.count || 0)}
                 />
             </div>
             {userResumes && userResumes.resumes.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {userResumes.resumes.map((resume) => (
-                        <ResumeItem key={resume.id} userResume={resume} context="userResumes" />
+                        <ResumeItem key={resume.id} userResume={resume} context="userResumes" userResumeCount={userResumes.count || 0} />
                     ))}
                 </div>
             ) : (
@@ -79,7 +49,7 @@ export default async function Page() {
                     </p>
 
                     {/* Create Resume Link */}
-                    <Link href="/resumes" className="mt-4 inline-flex items-center text-sm font-medium text-green-600 hover:underline">
+                    <Link href="/resume-templates" className="mt-4 inline-flex items-center text-sm font-medium text-green-600 hover:underline">
                         <svg className="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 2a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V3a1 1 0 011-1z" clipRule="evenodd" />
                         </svg>

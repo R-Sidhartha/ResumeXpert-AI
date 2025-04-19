@@ -2,7 +2,7 @@
 
 import logo from "@/assets/logo.png";
 import ThemeToggle from "@/components/ThemeToggle";
-import { UserButton, SignInButton, useAuth } from "@clerk/nextjs";
+import { UserButton, useAuth } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import clsx from "clsx";
 import {
@@ -12,12 +12,14 @@ import {
     ListOrdered,
     Menu,
     LogIn,
+    Gift,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function Navbar() {
     const { isSignedIn } = useAuth();
@@ -29,27 +31,35 @@ export default function Navbar() {
             <div className="mx-auto flex w-full lg:max-w-7xl items-center justify-between gap-3 p-3">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
-                    {/* <Image src={logo} alt="Logo" width={40} height={40} /> */}
-                    <span className="text-base md:text-xl font-semibold md:font-bold tracking-tight">
+                    <Image src={logo} alt="Logo" width={100} />
+                    {/* <span className="text-base md:text-xl font-semibold md:font-bold tracking-tight">
                         ResumeXpert AI
-                    </span>
+                    </span> */}
                 </Link>
 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-3">
                     <NavLink
-                        href="/resumes"
+                        href="/resume-templates"
                         label="Templates"
                         icon={<LayoutTemplate className="w-4 h-4 mr-1" />}
                         pathname={pathname}
                     />
                     {isSignedIn && (
-                        <NavLink
-                            href="/my-resumes"
-                            label="MyResumes"
-                            icon={<FileText className="w-4 h-4 mr-1" />}
-                            pathname={pathname}
-                        />
+                        <>
+                            <NavLink
+                                href="/my-resumes"
+                                label="MyResumes"
+                                icon={<FileText className="w-4 h-4 mr-1" />}
+                                pathname={pathname}
+                            />
+                            <NavLink
+                                href="/referral"
+                                label="Refer & Earn"
+                                icon={<Gift className="w-4 h-4 mr-1" />}
+                                pathname={pathname}
+                            />
+                        </>
                     )}
                     <NavLink
                         href="/subscriptions"
@@ -77,12 +87,14 @@ export default function Navbar() {
                             </UserButton.MenuItems>
                         </UserButton>
                     ) : (
-                        <SignInButton mode="modal">
-                            <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-green-600 text-white rounded hover:bg-green-700 transition">
+                        // <SignInButton>
+                        <Button variant={"default"} className="px-4 py-2 bg-green-600 text-white shadow hover:bg-green-700 transition-all" asChild>
+                            <Link href={"/sign-in"}>
                                 <LogIn className="w-4 h-4" />
                                 Sign In
-                            </button>
-                        </SignInButton>
+                            </Link>
+                        </Button>
+                        // </SignInButton>
                     )}
                 </div>
 
@@ -105,16 +117,16 @@ export default function Navbar() {
                                             }}
                                         />
                                     ) : (
-                                        <SignInButton mode="modal">
-                                            <button className="flex items-center gap-2 text-base font-medium text-green-700">
+                                        <Button variant={"default"} className="px-4 py-2 bg-green-600 text-white shadow hover:bg-green-700 transition-all" asChild>
+                                            <Link href={"/sign-in"}>
                                                 <LogIn className="w-4 h-4" />
                                                 Sign In
-                                            </button>
-                                        </SignInButton>
+                                            </Link>
+                                        </Button>
                                     )}
                                 </div>
                                 <MobileNavLink
-                                    href="/resumes"
+                                    href="/resume-templates"
                                     label="Templates"
                                     icon={<LayoutTemplate className="w-4 h-4" />}
                                 />
@@ -123,6 +135,13 @@ export default function Navbar() {
                                         href="/my-resumes"
                                         label="MyResumes"
                                         icon={<FileText className="w-4 h-4" />}
+                                    />
+                                )}
+                                {isSignedIn && (
+                                    <MobileNavLink
+                                        href="/referral"
+                                        label="Refer & Earn"
+                                        icon={<Gift className="w-4 h-4" />}
                                     />
                                 )}
                                 <MobileNavLink

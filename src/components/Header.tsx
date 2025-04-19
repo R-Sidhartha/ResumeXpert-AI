@@ -22,7 +22,7 @@ const Header = () => {
             {/* Navigation Links */}
             <nav className="space-x-3 md:space-x-6 flex items-center">
                 <Link href="/subscriptions" className="hover:opacity-65">Pricing</Link>
-                <Link href="/resumes" className="hover:opacity-65">Templates</Link>
+                <Link href="/resume-templates" className="hover:opacity-65">Templates</Link>
 
                 {/* Show UserButton when signed in, otherwise show Sign In button */}
                 {isSignedIn ? (

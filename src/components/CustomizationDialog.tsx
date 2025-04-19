@@ -2,7 +2,6 @@
 
 import {
     Dialog,
-    // DialogTrigger,
     DialogContent,
     DialogHeader,
     DialogTitle,
@@ -14,9 +13,10 @@ import CustomizationPanel from "./CustomizationPanel";
 import { CustomizationValues } from "@/lib/validation";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-// import { DEFAULT_CUSTOMIZATIONS } from "@/lib/utils";
-import usePremiumModal from "@/hooks/usePremiumModal";
+// import usePremiumModal from "@/hooks/usePremiumModal";
 import { SectionTitleForm } from "./SectionTitleForm";
+import { useRequireElite } from "@/lib/gating/requireElite";
+import { useSubscriptionLevel } from "@/app/(main)/SubscriptionLevelProviderWrapper";
 
 
 type Props = {
@@ -35,23 +35,25 @@ export default function CustomizationDialog({
     defaultCustomization
 }: Props) {
     const [open, setOpen] = useState(false);
-    const premiumModal = usePremiumModal();
-
+    // const premiumModal = usePremiumModal();
+    const plan = useSubscriptionLevel()
+    const requireElite = useRequireElite(plan);
     const handleSave = () => {
-        // apply the changes to parent
-        setOpen(false);        // close the dialog
+        setOpen(false);
     };
 
-    // const handleReset = () => {
-    //     onChange(defaultCustomization); // reset to default
-    // };
-
-    const handleOpen = () => {
-        if (canCustomize) {
-            setOpen(true);
+    const handleOpen = async () => {
+        const hasEliteAccess = await requireElite({
+            feature: "Resume Customization",
+            description:
+                "Customization options are available for Elite plan users. Upgrade to unlock this feature.",
+        });
+        if (!hasEliteAccess) {
+            return
         } else {
-            premiumModal.setOpen(true);
+            setOpen(true);
         }
+
     };
 
     return (

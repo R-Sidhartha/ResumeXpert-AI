@@ -1,13 +1,16 @@
 "use server";
+
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
-// Define a type for incoming user data (adjust as per your Prisma model)
+// Adjust based on your actual Prisma schema
 interface UserData {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   github?: string;
   linkedIn?: string;
   onboarded?: boolean;
+  referralCode?: string; // Added this for referral support
 }
 
 export async function setUserData(userData: UserData) {
@@ -15,11 +18,68 @@ export async function setUserData(userData: UserData) {
   if (!userId) return;
 
   try {
+    const currentUser = await prisma.user.findUnique({
+      where: { clerkId: userId },
+    });
+
+    if (!currentUser) {
+      console.error("User not found with clerkId:", userId);
+      return;
+    }
+
+    // --- Referral logic ---
+    if (userData.referralCode) {
+      const referredByUser = await prisma.user.findUnique({
+        where: { referralCode: userData.referralCode },
+      });
+
+      // Prevent self-referral
+      if (referredByUser && referredByUser.id !== currentUser.id) {
+        // Update current user with referral info
+        const updatedUser = await prisma.user.update({
+          where: { clerkId: userId },
+          data: {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            github: userData.github,
+            linkedIn: userData.linkedIn,
+            onboarded: true,
+            referredById: referredByUser.id,
+            subscriptionPlan: "free",
+            subscriptionId: null,
+          },
+        });
+
+        // Create referral entry (avoid duplicates with upsert)
+        await prisma.referral.upsert({
+          where: {
+            referrerId_refereeId: {
+              referrerId: referredByUser.id,
+              refereeId: updatedUser.id,
+            },
+          },
+          update: {},
+          create: {
+            referrerId: referredByUser.id,
+            refereeId: updatedUser.id,
+          },
+        });
+
+        return;
+      }
+    }
+
+    // --- No referral or self-referral case ---
     await prisma.user.update({
       where: { clerkId: userId },
       data: {
-        ...userData,
-        onboarded: true, // Always mark as onboarded when updating via onboarding
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        github: userData.github,
+        linkedIn: userData.linkedIn,
+        onboarded: true,
+        subscriptionPlan: "free",
+        subscriptionId: null,
       },
     });
   } catch (error) {

@@ -50,7 +50,7 @@ export default function Onboarding() {
 
         try {
             await setUserData(result.data);
-            router.push("/resumes");
+            router.push("/resume-templates");
         } catch (error) {
             console.error("Error saving user data:", error);
             setError("Something went wrong while saving.");
