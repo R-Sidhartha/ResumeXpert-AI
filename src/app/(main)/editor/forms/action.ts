@@ -143,8 +143,6 @@ export async function generateWorkExperience(
 
   const { description } = generateWorkExperienceSchema.parse(input);
 
-  console.log("inside generateWorkExperience function", description);
-
   const systemMessage = `
 You are a professional resume assistant AI.
 
@@ -486,7 +484,6 @@ Strict rules:
   });
 
   const aiText = completion.choices[0]?.message?.content;
-  console.log("aiText", aiText);
   if (!aiText) {
     toast.error("AI returned empty result");
     return null;

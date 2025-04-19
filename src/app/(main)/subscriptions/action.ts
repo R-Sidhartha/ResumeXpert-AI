@@ -34,7 +34,7 @@ export async function createSubscription(planType: "pro" | "elite") {
       userId: dbUser.id,
       razorpaySubscriptionId: subscription.id,
       planType,
-      status: "active", // You can change this status when payment is confirmed
+      status: "created", // You can change this status when payment is confirmed
     },
   });
 
@@ -71,8 +71,8 @@ export async function getPlanDetails() {
 
     const activeSub = user.subscriptions?.[0];
     return {
-      planType: user.subscriptionPlan,
-      status: activeSub?.status ?? "free",
+      planType: user.subscriptionPlan ?? "free",
+      status: user.subscriptionStatus ?? activeSub.status ?? "free",
       razorpaySubscriptionId: activeSub.razorpaySubscriptionId ?? null,
       nextBillingAt: activeSub?.currentPeriodEnd ?? null,
     };

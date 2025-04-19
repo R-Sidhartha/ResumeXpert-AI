@@ -101,7 +101,6 @@ export default function ResumeEditor(
         const generateLatex = templateGenerators[templateData.name] || (() => "");
         const newLatex = generateLatex(templateData.template, debouncedResumeData);
         setLatexCode(newLatex);
-        console.log("Generated LaTeX:", newLatex);
         return () => { };
     }, [debouncedResumeData, templateData]);
 
@@ -216,8 +215,6 @@ export default function ResumeEditor(
 
     // Get the Form Component
     const FormComponent = filteredSteps.find(step => step.key === safeCurrentStep)?.component;
-
-    console.log("resumeData for testing", resumeData)
 
     return (
         <div className="flex grow flex-col">

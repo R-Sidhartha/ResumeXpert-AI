@@ -33,8 +33,6 @@ export async function POST(req: Request) {
     },
   });
 
-  console.log("subscription at cancel subscription", subscription);
-
   if (!subscription || !subscription.razorpaySubscriptionId) {
     return NextResponse.json(
       { error: "No active subscription" },
@@ -48,12 +46,17 @@ export async function POST(req: Request) {
     razorpaySub = await razorpay.subscriptions.fetch(
       subscription.razorpaySubscriptionId,
     );
-    console.log("razorpaySub at cancel subscription", razorpaySub);
   } catch (fetchErr: any) {
     console.error("Failed to fetch Razorpay subscription:", fetchErr);
   }
 
   if (razorpaySub?.status === "cancelled") {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionStatus: "cancelled",
+      },
+    });
     await prisma.subscription.update({
       where: { id: subscription.id },
       data: { status: "pending" },
@@ -72,6 +75,14 @@ export async function POST(req: Request) {
 
     // Cancel Razorpay subscription
     await razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId);
+
+    // ✅ Optimistically mark user.subscriptionStatus = "cancelled"
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        subscriptionStatus: "cancelled",
+      },
+    });
 
     // Optimistically mark cancelled (webhook will finalize if needed)
     await prisma.subscription.update({

@@ -40,7 +40,7 @@ export function SubscriptionButton({ planType }: { planType: "pro" | "elite" }) 
                         setCelebration(true);
                         setTimeout(() => {
                             router.push("/billing");
-                        }, 2000);
+                        }, 4000);
                     } else {
                         toast.error("Subscription verification failed. Please contact support.");
                         console.error("Verification failed:", result);

@@ -45,11 +45,6 @@ export function hexToRgbFloat(hex: string): string {
   const g = parseInt(hex.substring(2, 4), 16) / 255;
   const b = parseInt(hex.substring(4, 6), 16) / 255;
 
-  console.log(
-    "RGB Float:",
-    `${r.toFixed(2)}, ${g.toFixed(2)}, ${b.toFixed(2)}`,
-  ); // Debugging line
-
   return `${r.toFixed(2)}, ${g.toFixed(2)}, ${b.toFixed(2)}`;
 }
 
@@ -276,9 +271,6 @@ export function getSectionTitle(
     customsections: "Custom Sections",
     summary: "Summary",
   };
-
-  console.log("customization", customization);
-  console.log("customization SectionTitles", customization?.sectionTitles);
 
   const customTitle =
     customization?.sectionTitles &&

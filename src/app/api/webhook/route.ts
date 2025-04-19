@@ -4,7 +4,6 @@ import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET!;
-console.log("Secret", RAZORPAY_WEBHOOK_SECRET);
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get("x-razorpay-signature") ?? "";
@@ -14,16 +13,11 @@ export async function POST(req: NextRequest) {
     .update(body)
     .digest("hex");
 
-  console.log("signature", signature);
-  console.log("expectedSignature", expectedSignature);
-
   if (signature !== expectedSignature) {
     return NextResponse.json({ status: "Invalid signature" }, { status: 400 });
   }
 
   const event = JSON.parse(body);
-
-  console.log("event", event);
 
   try {
     const razorpaySub = event.payload.subscription?.entity;
@@ -86,6 +80,7 @@ export async function POST(req: NextRequest) {
             data: {
               subscriptionPlan: subscription.planType,
               subscriptionId: subscription.id,
+              subscriptionStatus: "active",
             },
           });
           // ✅ Handle referral reward (ONLY if not already rewarded)

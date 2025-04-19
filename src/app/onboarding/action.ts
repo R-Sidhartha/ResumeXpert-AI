@@ -47,6 +47,7 @@ export async function setUserData(userData: UserData) {
             referredById: referredByUser.id,
             subscriptionPlan: "free",
             subscriptionId: null,
+            subscriptionStatus: null,
           },
         });
 
@@ -80,6 +81,7 @@ export async function setUserData(userData: UserData) {
         onboarded: true,
         subscriptionPlan: "free",
         subscriptionId: null,
+        subscriptionStatus: null,
       },
     });
   } catch (error) {

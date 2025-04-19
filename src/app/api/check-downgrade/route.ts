@@ -34,7 +34,11 @@ export async function GET() {
   if (isExpired) {
     await prisma.user.update({
       where: { id: userId },
-      data: { subscriptionPlan: "free", subscriptionId: null },
+      data: {
+        subscriptionPlan: "free",
+        subscriptionId: null,
+        subscriptionStatus: null,
+      },
     });
 
     return NextResponse.json({ downgraded: true });

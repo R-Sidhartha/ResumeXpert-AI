@@ -91,11 +91,9 @@ function InputDialog({
 
     async function onSubmit(input: GenerateWorkExperienceInput) {
         try {
-            console.log("Generating work experience:", input.description);
             const response = await generateWorkExperience(input);
             if (response) {
                 onWorkExperienceGenerated(response);
-                console.log("Generated work experience:", response);
             } else {
                 throw new Error("No response generated.");
             }

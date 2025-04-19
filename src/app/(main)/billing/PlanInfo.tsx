@@ -46,30 +46,36 @@ export const PlanInfo = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchPlanDetails = async () => {
             try {
                 const planDetails = await getPlanDetails();
-                if (planDetails) {
-                    setPlan({
-                        planType: planDetails.planType as Plan,
-                        status: planDetails.status,
-                        razorpaySubscriptionId: planDetails.razorpaySubscriptionId as string,
-                        nextBillingAt: planDetails.nextBillingAt
-                            ? new Date(planDetails.nextBillingAt).toLocaleDateString()
-                            : null,
-                    });
-                } else {
-                    setError("No active subscription found.");
+                if (isMounted) {
+                    if (planDetails) {
+                        setPlan({
+                            planType: planDetails.planType as Plan,
+                            status: planDetails.status,
+                            razorpaySubscriptionId: planDetails.razorpaySubscriptionId as string,
+                            nextBillingAt: planDetails.nextBillingAt
+                                ? new Date(planDetails.nextBillingAt).toLocaleDateString()
+                                : null,
+                        });
+                    } else {
+                        setError("No active subscription found.");
+                    }
                 }
             } catch (err) {
                 console.error("Error fetching plan details:", err);
-                setError("Failed to load plan details.");
+                if (isMounted) setError("Failed to load subscription data.");
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchPlanDetails();
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     if (loading) {

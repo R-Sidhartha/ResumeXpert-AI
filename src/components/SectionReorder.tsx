@@ -84,7 +84,6 @@ export function SectionReorder({
 
     useEffect(() => {
         setItems(defaultValue);
-        console.log(defaultValue)
     }, [defaultValue]);
 
     const handleDragEnd = (event: DragEndEvent) => {

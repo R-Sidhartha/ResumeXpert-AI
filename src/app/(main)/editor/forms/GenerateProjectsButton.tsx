@@ -104,7 +104,6 @@ function InputDialog({
             console.error(error);
             toast.error("Something went wrong. Please try again.");
         }
-        console.log("Generated Projects:", input.description);
     }
 
     return (

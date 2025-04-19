@@ -16,8 +16,6 @@ export default function FinalSaveButton({ pdfBytes, handleSave }: Props) {
     const [saveloading, setSaveLoading] = useState(false);
     const router = useRouter();
 
-    console.log("pdfBytes", pdfBytes)
-
     const handleFinalSave = async () => {
         if (!pdfBytes || pdfBytes.length === 0) {
             toast.warning("Please preview the latest changes, before saving.");

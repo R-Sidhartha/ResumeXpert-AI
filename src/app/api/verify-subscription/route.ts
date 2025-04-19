@@ -38,7 +38,6 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   const parsed = verifySchema.safeParse(body);
-  console.log("parsed", parsed);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
@@ -52,6 +51,7 @@ export async function POST(req: Request) {
       data: {
         subscriptionPlan: "free",
         subscriptionId: null,
+        subscriptionStatus: null,
       },
     });
 
@@ -66,16 +66,13 @@ export async function POST(req: Request) {
     .update(`${paymentId}|${subscriptionId}`)
     .digest("hex");
 
-  console.log("generatedSignature", generatedSignature);
-  console.log("signature", signature);
-
   if (generatedSignature !== signature) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   const razorpaySubscription =
     await razorpay.subscriptions.fetch(subscriptionId);
-  console.log("razorpaySubscription", razorpaySubscription);
+
   const currentPeriodEnd =
     razorpaySubscription.current_end != null
       ? new Date(razorpaySubscription.current_end * 1000)
@@ -99,6 +96,7 @@ export async function POST(req: Request) {
       data: {
         subscriptionPlan: planType,
         subscriptionId,
+        subscriptionStatus: "active",
       },
     }),
     prisma.subscription.upsert({

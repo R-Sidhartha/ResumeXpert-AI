@@ -46,8 +46,6 @@ export const getPdfSrcFromDB = async (
   }
 
   try {
-    console.log("Fetching PDF URL for resumeId:", resumeId);
-
     const resume = await prisma.resume.findUnique({
       where: { id: resumeId },
       select: { pdfUrl: true },

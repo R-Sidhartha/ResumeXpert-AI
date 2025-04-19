@@ -110,7 +110,6 @@ export async function saveResume(values: ResumeValues) {
   if ("resumeId" in cleanedCustomization) {
     delete (cleanedCustomization as any).resumeId;
   }
-  console.log("received values", values);
 
   const {
     // photo,
